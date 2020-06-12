@@ -18,6 +18,7 @@ package restapi
 
 import (
 	"fmt"
+	"io/ioutil"
 	"strconv"
 	"strings"
 
@@ -232,4 +233,24 @@ func getSecureExpectCTHeader() string {
 // getM3Host returns the hostname of mkube
 func getM3Host() string {
 	return env.Get(McsM3Host, "http://m3:8787")
+}
+
+// getMcsK8sServiceAccountJWTFromFile if mcs is running inside k8s
+// we check and extract the jwt sa-token from /var/run/secrets/kubernetes.io/serviceaccount/token, otherwise returns
+// empty string
+func getMcsK8sServiceAccountJWTFromFile() string {
+	dat, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/token")
+	if err != nil {
+		return ""
+	}
+	return string(dat)
+}
+
+// This operation will run only once on mcs start-up
+var saToken = getMcsK8sServiceAccountJWTFromFile()
+
+// getMcsK8sServiceAccountJWT return the ServiceAccount JWT mcs will use to interact with mkube, by
+// default will return the jwt sa-token associated to the pod running mcs inside kubernetes
+func getMcsK8sServiceAccountJWT() string {
+	return env.Get(McsK8sServiceAccountJWT, saToken)
 }

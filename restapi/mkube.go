@@ -25,10 +25,21 @@ import (
 	"strings"
 
 	apiErrors "github.com/go-openapi/errors"
+	"github.com/minio/mcs/pkg/auth"
 )
 
 // serverMkube handles calls for mkube
-func serverMkube(client *http.Client, w http.ResponseWriter, req *http.Request) {
+func serverMkube(m3SAToken string, client *http.Client, w http.ResponseWriter, req *http.Request) {
+	// check user session is valid by decrypting the claims inside the encrypted JWT
+	_, err := auth.GetClaimsFromTokenInRequest(req)
+	if err != nil {
+		apiErrors.ServeError(w, req, err)
+		return
+	}
+	if m3SAToken == "" {
+		apiErrors.ServeError(w, req, errors.New("service M3 is not available"))
+		return
+	}
 	// destination of the request, the mkube server
 	req.URL.Path = strings.Replace(req.URL.Path, "/mkube", "", 1)
 	targetURL := fmt.Sprintf("%s%s", getM3Host(), req.URL.String())
@@ -41,8 +52,10 @@ func serverMkube(client *http.Client, w http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	// set the m3Req headers
-	m3Req.Header = req.Header
+	// Set the m3Req authorization headers
+	// Authorization Header needs to be like "Authorization Bearer <jwt_token>"
+	token := fmt.Sprintf("Bearer %s", m3SAToken)
+	m3Req.Header.Add("Authorization", token)
 	resp, err := client.Do(m3Req)
 	if err != nil {
 		log.Println("error on m3 request:", err)

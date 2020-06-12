@@ -239,17 +239,16 @@ func newMinioClient(jwt string) (*minio.Client, error) {
 }
 
 // newS3BucketClient creates a new mc S3Client to talk to the server based on a bucket
-func newS3BucketClient(jwt string, bucketName string) (*mc.S3Client, error) {
+func newS3BucketClient(claims *auth.DecryptedClaims, bucketName string) (*mc.S3Client, error) {
 	endpoint := getMinIOServer()
 	useSSL := getMinIOEndpointIsSecure()
 
-	claims, err := auth.JWTAuthenticate(jwt)
-	if err != nil {
-		return nil, err
-	}
-
 	if strings.TrimSpace(bucketName) != "" {
 		endpoint += fmt.Sprintf("/%s", bucketName)
+	}
+
+	if claims == nil {
+		return nil, fmt.Errorf("the provided credentials are invalid")
 	}
 
 	s3Config := newS3Config(endpoint, claims.AccessKeyID, claims.SecretAccessKey, claims.SessionToken, !useSSL)

@@ -50,4 +50,5 @@ const (
 	McsSecureFeaturePolicy                   = "MCS_SECURE_FEATURE_POLICY"
 	McsSecureExpectCTHeader                  = "MCS_SECURE_EXPECT_CT_HEADER"
 	McsM3Host                                = "MCS_M3_HOSTNAME"
+	McsK8sServiceAccountJWT                  = "MCS_K8S_SA_JWT"
 )
