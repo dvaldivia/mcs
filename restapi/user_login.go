@@ -148,7 +148,9 @@ func getLoginDetailsResponse() (*models.LoginDetails, error) {
 	ctx := context.Background()
 	loginStrategy := models.LoginDetailsLoginStrategyForm
 	redirectURL := ""
-	if oauth2.IsIdpEnabled() {
+	if acl.GetOperatorOnly() == "on" {
+		loginStrategy = models.LoginDetailsLoginStrategyServiceAccount
+	} else if oauth2.IsIdpEnabled() {
 		loginStrategy = models.LoginDetailsLoginStrategyRedirect
 		// initialize new oauth2 client
 		oauth2Client, err := oauth2.NewOauth2ProviderClient(ctx, nil)
