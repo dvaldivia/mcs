@@ -39,7 +39,7 @@ paths:
       tags:
         - UserAPI
     post:
-      summary: Login to mcs
+      summary: Login to Console
       operationId: Login
       parameters:
         - name: body
@@ -108,7 +108,7 @@ paths:
 
   /logout:
     post:
-      summary: Logout from mcs.
+      summary: Logout from Console.
       operationId: Logout
       responses:
         200:
@@ -1738,6 +1738,10 @@ definitions:
         type: string
       namespace:
         type: string
+      minioExternalIP:
+        type: string
+      consoleExternalOP:
+        type: string
   listTenantsResponse:
     type: object
     properties:
@@ -1770,6 +1774,9 @@ definitions:
         type: string
       service_name:
         type: string
+      expose_service:
+        type: boolean
+        default: false
       zones:
         type: array
         items:
@@ -1791,9 +1798,12 @@ definitions:
         type: string
       secret_key:
         type: string
-      enable_mcs:
+      enable_console:
         type: boolean
         default: true
+      expose_console_service:
+        type: boolean
+        default: false
       enable_ssl:
         type: boolean
         default: true

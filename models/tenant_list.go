@@ -32,6 +32,9 @@ import (
 // swagger:model tenantList
 type TenantList struct {
 
+	// console external o p
+	ConsoleExternalOP string `json:"consoleExternalOP,omitempty"`
+
 	// creation date
 	CreationDate string `json:"creation_date,omitempty"`
 
@@ -40,6 +43,9 @@ type TenantList struct {
 
 	// instance count
 	InstanceCount int64 `json:"instance_count,omitempty"`
+
+	// minio external IP
+	MinioExternalIP string `json:"minioExternalIP,omitempty"`
 
 	// name
 	Name string `json:"name,omitempty"`

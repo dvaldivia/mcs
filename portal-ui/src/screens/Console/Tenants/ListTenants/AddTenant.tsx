@@ -110,7 +110,7 @@ const AddTenant = ({
   const [mountPath, setMountPath] = useState<string>("");
   const [accessKey, setAccessKey] = useState<string>("");
   const [secretKey, setSecretKey] = useState<string>("");
-  const [enableMCS, setEnableMCS] = useState<boolean>(true);
+  const [enableConsole, setEnableConsole] = useState<boolean>(true);
   const [enableSSL, setEnableSSL] = useState<boolean>(false);
   const [sizeFactor, setSizeFactor] = useState<string>("Gi");
   const [storageClasses, setStorageClassesList] = useState<Opts[]>([]);
@@ -275,7 +275,7 @@ const AddTenant = ({
           service_name: tenantName,
           image: imageName,
           enable_ssl: enableSSL,
-          enable_mcs: enableMCS,
+          enable_console: enableConsole,
           access_key: accessKey,
           secret_key: secretKey,
           volumes_per_server: volumesPerServer,
@@ -286,8 +286,13 @@ const AddTenant = ({
           zones: cleanZones,
         };
 
+        var ns = namespace;
+        if (ns === "") {
+          ns = "default";
+        }
+
         api
-          .invoke("POST", `/api/v1/tenants`, data)
+          .invoke("POST", `/api/v1/namespaces/${ns}/tenants`, data)
           .then((res) => {
             const newSrvAcc: NewServiceAccount = {
               accessKey: res.access_key,
@@ -735,15 +740,14 @@ const AddTenant = ({
           </div>
           <Grid item xs={12}>
             <CheckboxWrapper
-              value="enabled_mcs"
-              id="enabled_mcs"
-              name="enabled_mcs"
-              checked={enableMCS}
+              value="enabled_console"
+              id="enabled_console"
+              name="enabled_console"
+              checked={enableConsole}
               onChange={(e) => {
                 const targetD = e.target;
                 const checked = targetD.checked;
-
-                setEnableMCS(checked);
+                setEnableConsole(checked);
               }}
               label={"Enable Console"}
             />
@@ -757,7 +761,6 @@ const AddTenant = ({
               onChange={(e) => {
                 const targetD = e.target;
                 const checked = targetD.checked;
-
                 setEnableSSL(checked);
               }}
               label={"Enable SSL"}
@@ -890,7 +893,9 @@ const AddTenant = ({
                     <TableCell align="right" className={classes.tableTitle}>
                       Enable MCS
                     </TableCell>
-                    <TableCell>{enableMCS ? "Enabled" : "Disabled"}</TableCell>
+                    <TableCell>
+                      {enableConsole ? "Enabled" : "Disabled"}
+                    </TableCell>
                   </TableRow>
                 </React.Fragment>
               )}

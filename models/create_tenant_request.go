@@ -42,11 +42,17 @@ type CreateTenantRequest struct {
 	// annotations
 	Annotations map[string]string `json:"annotations,omitempty"`
 
-	// enable mcs
-	EnableMcs *bool `json:"enable_mcs,omitempty"`
+	// enable console
+	EnableConsole *bool `json:"enable_console,omitempty"`
 
 	// enable ssl
 	EnableSsl *bool `json:"enable_ssl,omitempty"`
+
+	// expose console service
+	ExposeConsoleService *bool `json:"expose_console_service,omitempty"`
+
+	// expose service
+	ExposeService *bool `json:"expose_service,omitempty"`
 
 	// image
 	Image string `json:"image,omitempty"`

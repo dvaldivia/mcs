@@ -383,9 +383,9 @@ func getTenantCreatedResponse(session *models.Principal, params admin_api.Create
 	if params.Body.EnableSsl != nil {
 		enableSSL = *params.Body.EnableSsl
 	}
-	enableMCS := true
-	if params.Body.EnableMcs != nil {
-		enableMCS = *params.Body.EnableMcs
+	enableConsole := true
+	if params.Body.EnableConsole != nil {
+		enableConsole = *params.Body.EnableConsole
 	}
 
 	volumeSize, err := resource.ParseQuantity(*params.Body.VolumeConfiguration.Size)
@@ -436,7 +436,7 @@ func getTenantCreatedResponse(session *models.Principal, params admin_api.Create
 	}
 	// optionals are set below
 
-	if enableMCS {
+	if enableConsole {
 		mcsSelector := fmt.Sprintf("%s-mcs", *params.Body.Name)
 
 		mcsSecretName := fmt.Sprintf("%s-secret", mcsSelector)

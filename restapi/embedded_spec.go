@@ -726,7 +726,7 @@ func init() {
         "tags": [
           "UserAPI"
         ],
-        "summary": "Login to mcs",
+        "summary": "Login to Console",
         "operationId": "Login",
         "parameters": [
           {
@@ -827,7 +827,7 @@ func init() {
         "tags": [
           "UserAPI"
         ],
-        "summary": "Logout from mcs.",
+        "summary": "Logout from Console.",
         "operationId": "Logout",
         "responses": {
           "200": {
@@ -1942,13 +1942,21 @@ func init() {
             "type": "string"
           }
         },
-        "enable_mcs": {
+        "enable_console": {
           "type": "boolean",
           "default": true
         },
         "enable_ssl": {
           "type": "boolean",
           "default": true
+        },
+        "expose_console_service": {
+          "type": "boolean",
+          "default": false
+        },
+        "expose_service": {
+          "type": "boolean",
+          "default": false
         },
         "image": {
           "type": "string"
@@ -2616,6 +2624,9 @@ func init() {
     "tenantList": {
       "type": "object",
       "properties": {
+        "consoleExternalOP": {
+          "type": "string"
+        },
         "creation_date": {
           "type": "string"
         },
@@ -2624,6 +2635,9 @@ func init() {
         },
         "instance_count": {
           "type": "integer"
+        },
+        "minioExternalIP": {
+          "type": "string"
         },
         "name": {
           "type": "string"
@@ -3443,7 +3457,7 @@ func init() {
         "tags": [
           "UserAPI"
         ],
-        "summary": "Login to mcs",
+        "summary": "Login to Console",
         "operationId": "Login",
         "parameters": [
           {
@@ -3544,7 +3558,7 @@ func init() {
         "tags": [
           "UserAPI"
         ],
-        "summary": "Logout from mcs.",
+        "summary": "Logout from Console.",
         "operationId": "Logout",
         "responses": {
           "200": {
@@ -4673,13 +4687,21 @@ func init() {
             "type": "string"
           }
         },
-        "enable_mcs": {
+        "enable_console": {
           "type": "boolean",
           "default": true
         },
         "enable_ssl": {
           "type": "boolean",
           "default": true
+        },
+        "expose_console_service": {
+          "type": "boolean",
+          "default": false
+        },
+        "expose_service": {
+          "type": "boolean",
+          "default": false
         },
         "image": {
           "type": "string"
@@ -5347,6 +5369,9 @@ func init() {
     "tenantList": {
       "type": "object",
       "properties": {
+        "consoleExternalOP": {
+          "type": "string"
+        },
         "creation_date": {
           "type": "string"
         },
@@ -5355,6 +5380,9 @@ func init() {
         },
         "instance_count": {
           "type": "integer"
+        },
+        "minioExternalIP": {
+          "type": "string"
         },
         "name": {
           "type": "string"

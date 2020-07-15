@@ -12,16 +12,16 @@ spec:
       labels:
         app: mcs
     spec:
-      serviceAccountName: m3-sa
+      serviceAccountName: mcs-sa
       containers:
         - name: mcs
-          image: minio/mcs:latest
+          image: minio/mcs:v0.2.0
           imagePullPolicy: "IfNotPresent"
           env:
             - name: MCS_OPERATOR_MODE
               value: "on"
           args:
-            - /mcs
+#            - /mcs
             - server
           ports:
             - containerPort: 9090
