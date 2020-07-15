@@ -240,6 +240,7 @@ const Console = ({
     },
     {}
   );
+
   const routes = [
     {
       component: Dashboard,
@@ -311,7 +312,7 @@ const Console = ({
     },
     {
       component: TenantDetails,
-      path: "/tenants/:tenantName",
+      path: "/tenants/:namespace/:tenantName",
     },
   ];
   const allowedRoutes = routes.filter((route: any) => allowedPages[route.path]);

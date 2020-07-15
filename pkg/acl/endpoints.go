@@ -36,7 +36,7 @@ var (
 	bucketsDetail   = "/buckets/:bucketName"
 	serviceAccounts = "/service-accounts"
 	tenants         = "/tenants"
-	tenantsDetail   = "/tenants/:tenantName"
+	tenantsDetail   = "/tenants/:namespace/:tenantName"
 	heal            = "/heal"
 )
 

@@ -22,6 +22,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SearchIcon from "@material-ui/icons/Search";
 import { Button } from "@material-ui/core";
 import { CreateIcon } from "../../../../icons";
+import history from "../../../../history";
 import TableWrapper from "../../Common/TableWrapper/TableWrapper";
 import { MinTablePaginationActions } from "../../../../common/MinTablePaginationActions";
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
@@ -148,8 +149,14 @@ const ListTenants = ({ classes }: ITenantsList) => {
     window.open(link, "_blank");
   };
 
+  const openTenantDetail = (tenantInformation: any) => {
+    history.push(
+      `tenants/${tenantInformation.namespace}/${tenantInformation.name}`
+    );
+  };
+
   const tableActions = [
-    { type: "view", to: `/tenants`, sendOnlyId: true },
+    { type: "view", onClick: openTenantDetail },
     { type: "delete", onClick: confirmDeleteTenant, sendOnlyId: true },
   ];
 

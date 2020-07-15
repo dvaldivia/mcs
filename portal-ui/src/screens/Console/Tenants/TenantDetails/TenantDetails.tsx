@@ -142,11 +142,12 @@ const TenantDetails = ({ classes, match }: ITenantDetailsProps) => {
 
   const loadInfo = () => {
     const tenantName = match.params["tenantName"];
+    const namespace = match.params["namespace"];
 
     setLoading(true);
 
     api
-      .invoke("GET", `/api/v1/tenants/${tenantName}`)
+      .invoke("GET", `/api/v1/namespaces/${namespace}/tenants/${tenantName}`)
       .then((res: ITenant) => {
         const total = res.volume_count * res.volume_size;
 
@@ -261,8 +262,8 @@ const TenantDetails = ({ classes, match }: ITenantDetailsProps) => {
             aria-label="tenant-tabs"
           >
             <Tab label="Zones" />
-            <Tab label="Buckets" />
-            <Tab label="Replication" />
+            {/*<Tab label="Buckets" />
+            <Tab label="Replication" />*/}
           </Tabs>
         </Grid>
         <Grid item xs={6} className={classes.actionsTray}>
