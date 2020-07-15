@@ -21,7 +21,6 @@ spec:
             - name: MCS_OPERATOR_MODE
               value: "on"
           args:
-#            - /mcs
             - server
           ports:
             - containerPort: 9090

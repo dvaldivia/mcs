@@ -270,7 +270,13 @@ const AddTenant = ({
       setValidationErrors(commonValidation);
 
       if (Object.keys(commonValidation).length === 0) {
+        var ns = namespace;
+        if (ns === "") {
+          ns = "default";
+        }
+
         const data: { [key: string]: any } = {
+          namespace: ns,
           name: tenantName,
           service_name: tenantName,
           image: imageName,
@@ -286,13 +292,9 @@ const AddTenant = ({
           zones: cleanZones,
         };
 
-        var ns = namespace;
-        if (ns === "") {
-          ns = "default";
-        }
-
         api
-          .invoke("POST", `/api/v1/namespaces/${ns}/tenants`, data)
+          // .invoke("POST", `/api/v1/namespaces/${ns}/tenants`, data)
+          .invoke("POST", `/api/v1/tenants`, data)
           .then((res) => {
             const newSrvAcc: NewServiceAccount = {
               accessKey: res.access_key,

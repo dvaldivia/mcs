@@ -23,4 +23,4 @@ EXPOSE 9090
 COPY --from=0 /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=0 /go/src/github.com/minio/mcs/mcs .
 
-CMD ["/mcs"]
+ENTRYPOINT ["/mcs"]
