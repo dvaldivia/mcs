@@ -187,9 +187,10 @@ func FileServerMiddleware(next http.Handler) http.Handler {
 				Asset:     portalUI.Asset,
 				AssetDir:  portalUI.AssetDir,
 				AssetInfo: portalUI.AssetInfo,
-				Prefix:    "build"}
+				Prefix:    "build",
+				Fallback:  "index.html",
+			}
 			wrapHandlerSinglePageApplication(http.FileServer(&assets)).ServeHTTP(w, r)
-
 		}
 	})
 }
