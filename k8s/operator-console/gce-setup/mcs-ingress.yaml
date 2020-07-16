@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: operator-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: mkube
+    networking.gke.io/managed-certificates: mcs-certs
+spec:
+  rules:
+    - host: cloud.min.dev
+      http:
+        paths:
+          - backend:
+              serviceName: mcs-np
+              servicePort: 9090

@@ -23,6 +23,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/minio/minio/pkg/env"
+
 	"github.com/minio/mcs/cluster"
 	gkev1beta2 "github.com/minio/mcs/pkg/apis/networking.gke.io/v1beta2"
 	gkeClientset "github.com/minio/mcs/pkg/clientgen/clientset/versioned"
@@ -170,7 +172,9 @@ func gkeIntegration(clientset *kubernetes.Clientset, tenantName string, namespac
 		return err
 	}
 	// udpate ingress with this new service
-	consoleIngress, err := clientset.ExtensionsV1beta1().Ingresses(namespace).Get(context.Background(), "console-ingress", metav1.GetOptions{})
+	ingressController := env.Get("MCS_GKE_INGRESS_CONTROLLER", "operator-ingress")
+
+	consoleIngress, err := clientset.ExtensionsV1beta1().Ingresses(namespace).Get(context.Background(), ingressController, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
