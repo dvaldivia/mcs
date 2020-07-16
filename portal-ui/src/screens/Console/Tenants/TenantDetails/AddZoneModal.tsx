@@ -1,16 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ModalWrapper from "../../Common/ModalWrapper/ModalWrapper";
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
-import { modalBasic } from "../../Common/FormComponents/common/styleLibrary";
-import InputBoxWrapper from "../../Common/FormComponents/InputBoxWrapper/InputBoxWrapper";
-import SelectWrapper from "../../Common/FormComponents/SelectWrapper/SelectWrapper";
 import Grid from "@material-ui/core/Grid";
 import {
   factorForDropdown,
+  generateZoneName,
   getTotalSize,
   niceBytes,
 } from "../../../../common/utils";
 import { Button, LinearProgress } from "@material-ui/core";
+import { modalBasic } from "../../Common/FormComponents/common/styleLibrary";
+import InputBoxWrapper from "../../Common/FormComponents/InputBoxWrapper/InputBoxWrapper";
+import { IZone } from "../ListTenants/types";
+import api from "../../../../common/api";
 
 interface IAddZoneProps {
   classes: any;
@@ -18,6 +20,9 @@ interface IAddZoneProps {
   onCloseZoneAndReload: (shouldReload: boolean) => void;
   volumesPerInstance: number;
   volumeSize: number;
+  zones: IZone[];
+  tenantName: string;
+  namespace: string;
 }
 
 const styles = (theme: Theme) =>
@@ -68,10 +73,38 @@ const AddZoneModal = ({
   onCloseZoneAndReload,
   volumesPerInstance,
   volumeSize,
+  zones,
+  tenantName,
+  namespace,
 }: IAddZoneProps) => {
   const [addSending, setAddSending] = useState<boolean>(false);
-  const [zoneName, setZoneName] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const [numberOfInstances, setNumberOfInstances] = useState<number>(0);
+
+  useEffect(() => {
+    if (addSending) {
+      const zoneName = generateZoneName(zones);
+
+      api
+        .invoke(
+          "POST",
+          `/api/v1/namespaces/${namespace}/tenants/${tenantName}/zones`,
+          {
+            name: zoneName,
+            servers: numberOfInstances,
+          }
+        )
+        .then((res) => {
+          setAddSending(false);
+          setError("");
+          onCloseZoneAndReload(true);
+        })
+        .catch((err) => {
+          setAddSending(false);
+          setError(err);
+        });
+    }
+  }, [addSending]);
 
   const instanceCapacity: number = volumeSize * volumesPerInstance;
   const totalCapacity: number = instanceCapacity * numberOfInstances;
@@ -90,18 +123,7 @@ const AddZoneModal = ({
           setAddSending(true);
         }}
       >
-        <Grid item xs={12}>
-          <InputBoxWrapper
-            id="zone_name"
-            name="zone_name"
-            type="string"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setZoneName(e.target.value);
-            }}
-            label="Name"
-            value={zoneName}
-          />
-        </Grid>
+        <div className={classes.errorBlock}>{error}</div>
         <Grid item xs={12}>
           <InputBoxWrapper
             id="number_instances"
@@ -110,7 +132,7 @@ const AddZoneModal = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setNumberOfInstances(parseInt(e.target.value));
             }}
-            label="Drives per Server"
+            label="Number of Instances"
             value={numberOfInstances.toString(10)}
           />
         </Grid>

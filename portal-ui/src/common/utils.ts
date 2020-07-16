@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import storage from "local-storage-fallback";
+import { IZone } from "../screens/Console/Tenants/ListTenants/types";
 
 export const units = [
   "B",
@@ -107,4 +108,14 @@ export const getBytes = (value: string, unit: string) => {
 export const getTotalSize = (value: string, unit: string) => {
   const bytes = getBytes(value, unit).toString(10);
   return niceBytes(bytes);
+};
+
+// Zone Name Generator
+export const generateZoneName = (zones: IZone[]) => {
+  const maxRn = 5000000;
+  const minRn = 1000;
+  const zoneCounter = zones.length + 1;
+  const randomCounter = Math.ceil(Math.random() * (maxRn - minRn) + minRn);
+
+  return `zone-${zoneCounter}-${randomCounter.toString(16)}`;
 };

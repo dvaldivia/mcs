@@ -30,7 +30,10 @@ import { modalBasic } from "../../Common/FormComponents/common/styleLibrary";
 import { IVolumeConfiguration, IZone } from "./types";
 import CheckboxWrapper from "../../Common/FormComponents/CheckboxWrapper/CheckboxWrapper";
 import SelectWrapper from "../../Common/FormComponents/SelectWrapper/SelectWrapper";
-import { k8sfactorForDropdown } from "../../../../common/utils";
+import {
+  generateZoneName,
+  k8sfactorForDropdown,
+} from "../../../../common/utils";
 import ZonesMultiSelector from "./ZonesMultiSelector";
 import {
   commonFormValidation,
@@ -317,10 +320,11 @@ const AddTenant = ({
   }, [addSending]);
 
   useEffect(() => {
+    const zoneName = generateZoneName([]);
     if (advancedMode) {
-      setZones([{ name: "zone-1", servers: 0, capacity: "0", volumes: 0 }]);
+      setZones([{ name: zoneName, servers: 0, capacity: "0", volumes: 0 }]);
     } else {
-      setZones([{ name: "zone-1", servers: 1, capacity: "0", volumes: 0 }]);
+      setZones([{ name: zoneName, servers: 1, capacity: "0", volumes: 0 }]);
     }
   }, [advancedMode]);
 

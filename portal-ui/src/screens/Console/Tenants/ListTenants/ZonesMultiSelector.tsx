@@ -27,6 +27,7 @@ import {
 } from "../../Common/FormComponents/common/styleLibrary";
 import DeleteIcon from "../../../../icons/DeleteIcon";
 import { IZone } from "./types";
+import { generateZoneName } from "../../../../common/utils";
 
 interface IZonesMultiSelector {
   elements: IZone[];
@@ -101,7 +102,7 @@ const ZonesMultiSelector = ({
   useEffect(() => {
     if (currentElements.length === 0 && elements.length === 0) {
       // Initial Value
-      setCurrentElements([{ ...defaultZone, name: "zone-1" }]);
+      setCurrentElements([{ ...defaultZone, name: generateZoneName([]) }]);
     } else if (currentElements.length === 0 && elements.length > 0) {
       setCurrentElements(elements);
       setInternalCounter(elements.length);

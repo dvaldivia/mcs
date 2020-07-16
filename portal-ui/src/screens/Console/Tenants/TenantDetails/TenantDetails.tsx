@@ -120,11 +120,14 @@ const TenantDetails = ({ classes, match }: ITenantDetailsProps) => {
   const [error, setError] = useState<string>("");
   const [tenant, setTenant] = useState<ITenant | null>(null);
 
+  const tenantName = match.params["tenantName"];
+  const namespace = match.params["namespace"];
+
   const onCloseZoneAndRefresh = (reload: boolean) => {
     setAddZone(false);
 
     if (reload) {
-      console.log("reload");
+      loadInfo();
     }
   };
 
@@ -141,9 +144,6 @@ const TenantDetails = ({ classes, match }: ITenantDetailsProps) => {
   };
 
   const loadInfo = () => {
-    const tenantName = match.params["tenantName"];
-    const namespace = match.params["namespace"];
-
     setLoading(true);
 
     api
@@ -185,6 +185,9 @@ const TenantDetails = ({ classes, match }: ITenantDetailsProps) => {
           onCloseZoneAndReload={onCloseZoneAndRefresh}
           volumeSize={tenant.volume_size}
           volumesPerInstance={tenant.volumes_per_server}
+          zones={zones}
+          tenantName={tenantName}
+          namespace={namespace}
         />
       )}
       {addBucketOpen && (
