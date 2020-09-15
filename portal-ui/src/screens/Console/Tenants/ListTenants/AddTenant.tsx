@@ -393,9 +393,38 @@ const AddTenant = ({
             />
           </Grid>
           <Grid item xs={12}>
+            <InputBoxWrapper
+              id="namespace"
+              name="namespace"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setNamespace(e.target.value);
+                clearValidationError("namespace");
+              }}
+              label="Namespace"
+              value={namespace}
+              error={validationErrors["namespace"] || ""}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <SelectWrapper
+              id="storage_class"
+              name="storage_class"
+              onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
+                setVolumeConfig("storage_class", e.target.value as string);
+              }}
+              label="Storage Class"
+              value={volumeConfiguration.storage_class}
+              options={storageClasses}
+            />
+          </Grid>
+          <Grid item xs={12}>
             <br />
             <span>
-              Use Advanced mode to configure additional options in the tenant
+              Check 'Advanced Mode' for additional configuration options, such
+              as IDP, Disk Encryption, and customized TLS/SSL Certificates.
+              <br />
+              Leave 'Advanced Mode' unchecked to use the secure default settings
+              for the tenant.
             </span>
             <br />
             <br />
@@ -544,19 +573,6 @@ const AddTenant = ({
               error={validationErrors["service_name"] || ""}
             />
           </Grid>
-          <Grid item xs={12}>
-            <InputBoxWrapper
-              id="namespace"
-              name="namespace"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setNamespace(e.target.value);
-                clearValidationError("namespace");
-              }}
-              label="Namespace"
-              value={namespace}
-              error={validationErrors["namespace"] || ""}
-            />
-          </Grid>
         </React.Fragment>
       ),
       buttons: [
@@ -577,18 +593,6 @@ const AddTenant = ({
               which one to allocate the tenant to
             </span>
           </div>
-          <Grid item xs={12}>
-            <SelectWrapper
-              id="storage_class"
-              name="storage_class"
-              onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
-                setVolumeConfig("storage_class", e.target.value as string);
-              }}
-              label="Storage Class"
-              value={volumeConfiguration.storage_class}
-              options={storageClasses}
-            />
-          </Grid>
         </React.Fragment>
       ),
       buttons: [
