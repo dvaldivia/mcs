@@ -39,6 +39,7 @@ import {
 import GenericWizard from "../../Common/GenericWizard/GenericWizard";
 import { IWizardElement } from "../../Common/GenericWizard/types";
 import { NewServiceAccount } from "../../Common/CredentialsPrompt/types";
+import RadioGroupSelector from "../../Common/FormComponents/RadioGroupSelector/RadioGroupSelector";
 
 interface IAddTenantProps {
   open: boolean;
@@ -117,6 +118,19 @@ const AddTenant = ({
   const [validationErrors, setValidationErrors] = useState<any>({});
   const [namespace, setNamespace] = useState<string>("");
   const [advancedMode, setAdvancedMode] = useState<boolean>(false);
+  const [enablePrometheus, setEnablePrometheus] = useState<boolean>(false);
+  const [consoleImage, setConsoleImage] = useState<string>("");
+  const [idpSelection, setIdpSelection] = useState<string>("none");
+  const [openIDURL, setOpenIDURL] = useState<string>("");
+  const [openIDClientID, setOpenIDClientID] = useState<string>("");
+  const [openIDSecretID, setOpenIDSecretID] = useState<string>("");
+  const [ADURL, setADURL] = useState<string>("");
+  const [ADSkipTLS, setADSkipTLS] = useState<boolean>(false);
+  const [ADServerInsecure, setADServerInsecure] = useState<boolean>(false);
+  const [ADUserNameFilter, setADUserNameFilter] = useState<string>("");
+  const [ADGroupBaseDN, setADGroupBaseDN] = useState<string>("");
+  const [ADGroupSearchFilter, setADGroupSearchFilter] = useState<string>("");
+  const [ADNameAttribute, setADNameAttribute] = useState<string>("");
 
   // Forms Validation
   const [nameTenantValid, setNameTenantValid] = useState<boolean>(false);
@@ -309,14 +323,6 @@ const AddTenant = ({
     }
   }, [addSending]);
 
-  useEffect(() => {
-    if (advancedMode) {
-      setZones([{ name: "zone-1", servers: 0, capacity: "0", volumes: 0 }]);
-    } else {
-      setZones([{ name: "zone-1", servers: 1, capacity: "0", volumes: 0 }]);
-    }
-  }, [advancedMode]);
-
   const setVolumeConfig = (item: string, value: string) => {
     const volumeCopy: IVolumeConfiguration = {
       size: item !== "size" ? volumeConfiguration.size : parseInt(value),
@@ -386,7 +392,7 @@ const AddTenant = ({
                 setTenantName(e.target.value);
                 clearValidationError("tenant-name");
               }}
-              label="Tenant Name"
+              label="Name"
               value={tenantName}
               required
               error={validationErrors["tenant-name"] || ""}
@@ -451,82 +457,32 @@ const AddTenant = ({
     },
     {
       label: "Configure",
+      advancedOnly: true,
       componentRender: (
         <React.Fragment>
           <div className={classes.headerElement}>
             <h3>Configure</h3>
             <span>Basic configurations for tenant management</span>
           </div>
+
           <Grid item xs={12}>
             <CheckboxWrapper
-              value="custom_acck"
-              id="custom_acck"
-              name="custom_acck"
-              checked={customACCK}
+              value="custom_dockerhub"
+              id="custom_dockerhub"
+              name="custom_dockerhub"
+              checked={customDockerhub}
               onChange={(e) => {
                 const targetD = e.target;
                 const checked = targetD.checked;
 
-                setCustomACCK(checked);
+                setCustomDockerhub(checked);
               }}
-              label={"Use Custom Access Keys"}
+              label={"Use custom image"}
             />
           </Grid>
-          {customACCK && (
-            <React.Fragment>
-              Please enter your access & secret keys
-              <Grid item xs={12}>
-                <InputBoxWrapper
-                  id="access_key"
-                  name="access_key"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setAccessKey(e.target.value);
-                    clearValidationError("access_key");
-                  }}
-                  label="Access Key"
-                  value={accessKey}
-                  error={validationErrors["access_key"] || ""}
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <InputBoxWrapper
-                  id="secret_key"
-                  name="secret_key"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setSecretKey(e.target.value);
-                    clearValidationError("secret_key");
-                  }}
-                  label="Secret Key"
-                  value={secretKey}
-                  error={validationErrors["secret_key"] || ""}
-                  required
-                />
-              </Grid>
-            </React.Fragment>
-          )}
-
-          {advancedMode && (
-            <Grid item xs={12}>
-              <CheckboxWrapper
-                value="custom_dockerhub"
-                id="custom_dockerhub"
-                name="custom_dockerhub"
-                checked={customDockerhub}
-                onChange={(e) => {
-                  const targetD = e.target;
-                  const checked = targetD.checked;
-
-                  setCustomDockerhub(checked);
-                }}
-                label={"Use custom image"}
-              />
-            </Grid>
-          )}
-
           {customDockerhub && (
             <React.Fragment>
-              Please enter the MinIO image from dockerhub
+              Please enter the MinIO image from dockerhub to use
               <Grid item xs={12}>
                 <InputBoxWrapper
                   id="image"
@@ -535,15 +491,45 @@ const AddTenant = ({
                     setImageName(e.target.value);
                     clearValidationError("image");
                   }}
-                  label="MinIO Image"
+                  label="MinIO's Image"
                   value={imageName}
                   error={validationErrors["image"] || ""}
                   placeholder="Eg. minio/minio:RELEASE.2020-05-08T02-40-49Z"
                   required
                 />
               </Grid>
+              <Grid item xs={12}>
+                <InputBoxWrapper
+                  id="consoleImage"
+                  name="consoleImage"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setConsoleImage(e.target.value);
+                    clearValidationError("consoleImage");
+                  }}
+                  label="Console's Image"
+                  value={consoleImage}
+                  error={validationErrors["consoleImage"] || ""}
+                  placeholder="Eg. minio/console:v0.3.13"
+                  required
+                />
+              </Grid>
             </React.Fragment>
           )}
+          <Grid item xs={12}>
+            <CheckboxWrapper
+              value="enable_prometheus"
+              id="enable_prometheus"
+              name="enable_prometheus"
+              checked={enablePrometheus}
+              onChange={(e) => {
+                const targetD = e.target;
+                const checked = targetD.checked;
+
+                setEnablePrometheus(checked);
+              }}
+              label={"Enable prometheus integration"}
+            />
+          </Grid>
         </React.Fragment>
       ),
       buttons: [
@@ -553,46 +539,185 @@ const AddTenant = ({
       ],
     },
     {
-      label: "Service Configuration",
+      label: "IDP",
       advancedOnly: true,
       componentRender: (
         <React.Fragment>
           <div className={classes.headerElement}>
-            <h3>Service Configuration</h3>
-          </div>
-          <Grid item xs={12}>
-            <InputBoxWrapper
-              id="service_name"
-              name="service_name"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setServiceName(e.target.value);
-                clearValidationError("service_name");
-              }}
-              label="Service Name"
-              value={serviceName}
-              error={validationErrors["service_name"] || ""}
-            />
-          </Grid>
-        </React.Fragment>
-      ),
-      buttons: [
-        cancelButton,
-        { label: "Back", type: "back", enabled: true },
-        { label: "Next", type: "next", enabled: true },
-      ],
-    },
-    {
-      label: "Storage Class",
-      advancedOnly: true,
-      componentRender: (
-        <React.Fragment>
-          <div className={classes.headerElement}>
-            <h3>Choose your prefered Storage Class</h3>
+            <h3>IDP</h3>
             <span>
-              Review the storage classes available in the tenant and decide
-              which one to allocate the tenant to
+              Access to the tenant can be controlled via an external Identity
+              Manager.
             </span>
           </div>
+          <Grid item xs={12}>
+            <RadioGroupSelector
+              currentSelection={idpSelection}
+              id="idp-options"
+              name="idp-options"
+              label="IDP Selection"
+              onChange={(e) => {
+                setIdpSelection(e.target.value);
+              }}
+              selectorOptions={[
+                { label: "None", value: "none" },
+                { label: "OpenID", value: "OpenID" },
+                { label: "Active Directory", value: "AD" },
+              ]}
+            />
+            MinIO supports both OpenID and Active Directory
+          </Grid>
+
+          {idpSelection === "OpenID" && (
+            <React.Fragment>
+              <Grid item xs={12}>
+                <InputBoxWrapper
+                  id="openID_URL"
+                  name="openID_URl"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setOpenIDURL(e.target.value);
+                    clearValidationError("openID_URL");
+                  }}
+                  label="URL"
+                  value={openIDURL}
+                  error={validationErrors["openID_URL"] || ""}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <InputBoxWrapper
+                  id="openID_clientID"
+                  name="openID_clientID"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setOpenIDClientID(e.target.value);
+                    clearValidationError("openID_clientID");
+                  }}
+                  label="Client ID"
+                  value={openIDClientID}
+                  error={validationErrors["openID_clientID"] || ""}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <InputBoxWrapper
+                  id="openID_secretID"
+                  name="openID_secretID"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setOpenIDSecretID(e.target.value);
+                    clearValidationError("openID_secretID");
+                  }}
+                  label="Secret ID"
+                  value={openIDSecretID}
+                  error={validationErrors["openID_secretID"] || ""}
+                  required
+                />
+              </Grid>
+            </React.Fragment>
+          )}
+          {idpSelection === "AD" && (
+            <React.Fragment>
+              <Grid item xs={12}>
+                <InputBoxWrapper
+                  id="AD_URL"
+                  name="AD_URL"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setADURL(e.target.value);
+                    clearValidationError("AD_URL");
+                  }}
+                  label="URL"
+                  value={ADURL}
+                  error={validationErrors["AD_URL"] || ""}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CheckboxWrapper
+                  value="ad_skipTLS"
+                  id="ad_skipTLS"
+                  name="ad_skipTLS"
+                  checked={ADSkipTLS}
+                  onChange={(e) => {
+                    const targetD = e.target;
+                    const checked = targetD.checked;
+
+                    setADSkipTLS(checked);
+                  }}
+                  label={"Skip TLS Verification"}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CheckboxWrapper
+                  value="ad_serverInsecure"
+                  id="ad_serverInsecure"
+                  name="ad_serverInsecure"
+                  checked={ADServerInsecure}
+                  onChange={(e) => {
+                    const targetD = e.target;
+                    const checked = targetD.checked;
+
+                    setADServerInsecure(checked);
+                  }}
+                  label={"Server Insecure"}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <InputBoxWrapper
+                  id="ad_userNameFilter"
+                  name="ad_userNameFilter"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setADUserNameFilter(e.target.value);
+                    clearValidationError("ad_userNameFilter");
+                  }}
+                  label="User Search Filter"
+                  value={ADUserNameFilter}
+                  error={validationErrors["ad_userNameFilter"] || ""}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <InputBoxWrapper
+                  id="ad_groupBaseDN"
+                  name="ad_groupBaseDN"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setADGroupBaseDN(e.target.value);
+                    clearValidationError("ad_groupBaseDN");
+                  }}
+                  label="Group Search Base DN"
+                  value={ADGroupBaseDN}
+                  error={validationErrors["ad_groupBaseDN"] || ""}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <InputBoxWrapper
+                  id="ad_groupSearchFilter"
+                  name="ad_groupSearchFilter"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setADGroupSearchFilter(e.target.value);
+                    clearValidationError("ad_groupSearchFilter");
+                  }}
+                  label="Group Search Filter"
+                  value={ADGroupSearchFilter}
+                  error={validationErrors["ad_groupSearchFilter"] || ""}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <InputBoxWrapper
+                  id="ad_nameAttribute"
+                  name="ad_nameAttribute"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setADNameAttribute(e.target.value);
+                    clearValidationError("ad_nameAttribute");
+                  }}
+                  label="Group Name Attribute"
+                  value={ADNameAttribute}
+                  error={validationErrors["ad_nameAttribute"] || ""}
+                  required
+                />
+              </Grid>
+            </React.Fragment>
+          )}
         </React.Fragment>
       ),
       buttons: [
@@ -602,11 +727,11 @@ const AddTenant = ({
       ],
     },
     {
-      label: "Server Configuration",
+      label: "Tenant Size",
       componentRender: (
         <React.Fragment>
           <div className={classes.headerElement}>
-            <h3>Server Configuration</h3>
+            <h3>Tenant Size</h3>
             <span>Define the server configuration</span>
           </div>
           {advancedMode && (
@@ -698,85 +823,7 @@ const AddTenant = ({
       ],
     },
     {
-      label: "Zones Definition",
-      advancedOnly: true,
-      componentRender: (
-        <React.Fragment>
-          <div className={classes.headerElement}>
-            <h3>Zones Definition</h3>
-            <span>Define the size of the tenant by defining the zone size</span>
-          </div>
-          <Grid item xs={12}>
-            <div>
-              <ZonesMultiSelector
-                label="Zones"
-                name="zones_selector"
-                onChange={(elements: IZone[]) => {
-                  setZones(elements);
-                }}
-                elements={zones}
-              />
-            </div>
-            <div className={classes.zoneError}>
-              {validationErrors["zones_selector"] || ""}
-            </div>
-          </Grid>
-        </React.Fragment>
-      ),
-      buttons: [
-        cancelButton,
-        { label: "Back", type: "back", enabled: true },
-        { label: "Next", type: "next", enabled: zonesValid },
-      ],
-    },
-    {
-      label: "Extra Configurations",
-      advancedOnly: true,
-      componentRender: (
-        <React.Fragment>
-          <div className={classes.headerElement}>
-            <h3>Extra Configurations</h3>
-          </div>
-          <Grid item xs={12}>
-            <CheckboxWrapper
-              value="enabled_console"
-              id="enabled_console"
-              name="enabled_console"
-              checked={enableConsole}
-              onChange={(e) => {
-                const targetD = e.target;
-                const checked = targetD.checked;
-
-                setEnableConsole(checked);
-              }}
-              label={"Enable Console"}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <CheckboxWrapper
-              value="enable_tls"
-              id="enable_tls"
-              name="enable_tls"
-              checked={enableTLS}
-              onChange={(e) => {
-                const targetD = e.target;
-                const checked = targetD.checked;
-
-                setEnableTLS(checked);
-              }}
-              label={"Enable TLS"}
-            />
-          </Grid>
-        </React.Fragment>
-      ),
-      buttons: [
-        cancelButton,
-        { label: "Back", type: "back", enabled: true },
-        { label: "Next", type: "next", enabled: true },
-      ],
-    },
-    {
-      label: "Review",
+      label: "Preview Configuration",
       componentRender: (
         <React.Fragment>
           <div className={classes.headerElement}>
