@@ -31,7 +31,6 @@ import { IVolumeConfiguration, IZone } from "./types";
 import CheckboxWrapper from "../../Common/FormComponents/CheckboxWrapper/CheckboxWrapper";
 import SelectWrapper from "../../Common/FormComponents/SelectWrapper/SelectWrapper";
 import { k8sfactorForDropdown } from "../../../../common/utils";
-import ZonesMultiSelector from "./ZonesMultiSelector";
 import {
   commonFormValidation,
   IValidation,
@@ -103,7 +102,6 @@ const AddTenant = ({
   const [addError, setAddError] = useState<string>("");
   const [tenantName, setTenantName] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
-  const [zones, setZones] = useState<IZone[]>([]);
   const [volumeConfiguration, setVolumeConfiguration] = useState<
     IVolumeConfiguration
   >({ size: 0, storage_class: "" });
@@ -159,6 +157,22 @@ const AddTenant = ({
 
   // Custom Elements
   const [customDockerhub, setCustomDockerhub] = useState<boolean>(false);
+
+  // FilesBase64
+  const [filesBase64, setFilesBase64] = useState<any>({
+    tlsKey: "",
+    tlsCert: "",
+    consoleKey: "",
+    consoleCert: "",
+    serverKey: "",
+    serverCert: "",
+    clientKey: "",
+    clientCert: "",
+    vaultKey: "",
+    vaultCert: "",
+    vaultCA: "",
+    gemaltoCA: "",
+  });
 
   useEffect(() => {
     fetchStorageClassList();
@@ -223,12 +237,9 @@ const AddTenant = ({
     setValidationErrors(newValidationElement);
   };
 
+  /* Send Information to backend */
   useEffect(() => {
     if (addSending) {
-      let cleanZones = zones.filter(
-        (zone) => zone.name !== "" && zone.servers > 0 && !isNaN(zone.servers)
-      );
-
       const commonValidation = commonFormValidation(validationElements);
 
       setValidationErrors(commonValidation);
@@ -244,7 +255,7 @@ const AddTenant = ({
             size: `${volumeConfiguration.size}${sizeFactor}`,
             storage_class: volumeConfiguration.storage_class,
           },
-          zones: cleanZones,
+          zones: [],
         };
 
         api
@@ -280,12 +291,12 @@ const AddTenant = ({
     setVolumeConfiguration(volumeCopy);
   };
 
-  const setServersSimple = (value: string) => {
-    const copyZone = [...zones];
+  const storeCertInObject = (certName: string, certValue: string) => {
+    const copyCurrentList = { ...filesBase64 };
 
-    copyZone[0].servers = parseInt(value, 10);
+    copyCurrentList[certName] = certValue;
 
-    setZones(copyZone);
+    setFilesBase64(copyCurrentList);
   };
 
   const fetchStorageClassList = () => {
@@ -721,7 +732,7 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("tlsKey", encodedValue);
                       }}
                       accept=".key,.pem"
                       id="tlsKey"
@@ -733,7 +744,7 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("tlsCert", encodedValue);
                       }}
                       accept=".cer,.crt,.cert,.pem"
                       id="tlsCert"
@@ -746,7 +757,7 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("consoleKey", encodedValue);
                       }}
                       accept=".key,.pem"
                       id="consoleKey"
@@ -758,7 +769,7 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("consoleCert", encodedValue);
                       }}
                       accept=".cer,.crt,.cert,.pem"
                       id="consoleCert"
@@ -829,7 +840,7 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("serverKey", encodedValue);
                       }}
                       accept=".key,.pem"
                       id="serverKey"
@@ -841,7 +852,7 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("serverCert", encodedValue);
                       }}
                       accept=".cer,.crt,.cert,.pem"
                       id="serverCert"
@@ -854,7 +865,7 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("clientKey", encodedValue);
                       }}
                       accept=".key,.pem"
                       id="clientKey"
@@ -866,7 +877,7 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("clientCert", encodedValue);
                       }}
                       accept=".cer,.crt,.cert,.pem"
                       id="clientCert"
@@ -986,11 +997,11 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("vaultKey", encodedValue);
                       }}
                       accept=".key,.pem"
                       id="vault_key"
-                      name="clievault_keyntCert"
+                      name="vault_key"
                       label="Key"
                       required
                     />
@@ -998,7 +1009,7 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("vaultCert", encodedValue);
                       }}
                       accept=".cer,.crt,.cert,.pem"
                       id="vault_cert"
@@ -1010,7 +1021,7 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("vaultCA", encodedValue);
                       }}
                       accept=".cer,.crt,.cert,.pem"
                       id="vault_ca"
@@ -1182,7 +1193,7 @@ const AddTenant = ({
                   <Grid item xs={12}>
                     <FileSelector
                       onChange={(encodedValue) => {
-                        console.log(encodedValue);
+                        storeCertInObject("gemaltoCA", encodedValue);
                       }}
                       accept=".cer,.crt,.cert,.pem"
                       id="gemalto_ca"
@@ -1360,12 +1371,6 @@ const AddTenant = ({
                 <TableCell>
                   {volumeConfiguration.size} {sizeFactor}
                 </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell align="right" className={classes.tableTitle}>
-                  Total Zones
-                </TableCell>
-                <TableCell>{zones.length}</TableCell>
               </TableRow>
               {advancedMode && (
                 <React.Fragment>
