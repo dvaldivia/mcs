@@ -145,6 +145,14 @@ const AddTenant = ({
   const [awsAccessKey, setAWSAccessKey] = useState<string>("");
   const [awsSecretKey, setAWSSecretKey] = useState<string>("");
   const [awsToken, setAWSToken] = useState<string>("");
+  const [vaultEndpoint, setVaultEndpoint] = useState<string>("");
+  const [vaultEngine, setVaultEngine] = useState<string>("");
+  const [vaultNamespace, setVaultNamespace] = useState<string>("");
+  const [vaultPrefix, setVaultPrefix] = useState<string>("");
+  const [vaultId, setVaultId] = useState<string>("");
+  const [vaultSecret, setVaultSecret] = useState<string>("");
+  const [vaultRetry, setVaultRetry] = useState<string>("0");
+  const [vaultPing, setVaultPing] = useState<string>("0");
 
   // Forms Validation
   const [nameTenantValid, setNameTenantValid] = useState<boolean>(false);
@@ -947,7 +955,160 @@ const AddTenant = ({
 
               {encryptionType === "vault" && (
                 <React.Fragment>
-                  <h5>Vault</h5>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="vault_endpoint"
+                      name="vault_endpoint"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setVaultEndpoint(e.target.value);
+                        clearValidationError("vault_endpoint");
+                      }}
+                      label="Endpoint"
+                      value={vaultEndpoint}
+                      error={validationErrors["vault_endpoint"] || ""}
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="vault_engine"
+                      name="vault_engine"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setVaultEngine(e.target.value);
+                      }}
+                      label="Engine"
+                      value={vaultEngine}
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="vault_namespace"
+                      name="vault_namespace"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setVaultNamespace(e.target.value);
+                      }}
+                      label="Namespace"
+                      value={vaultNamespace}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="vault_prefix"
+                      name="vault_prefix"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setVaultPrefix(e.target.value);
+                      }}
+                      label="Prefix"
+                      value={vaultPrefix}
+                    />
+                  </Grid>
+                  <h5>App Role</h5>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="vault_engine"
+                      name="vault_engine"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setVaultEngine(e.target.value);
+                      }}
+                      label="Engine"
+                      value={vaultEngine}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="vault_id"
+                      name="vault_id"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setVaultId(e.target.value);
+                        clearValidationError("vault_id");
+                      }}
+                      label="Id"
+                      value={vaultId}
+                      error={validationErrors["vault_id"] || ""}
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="vault_secret"
+                      name="vault_secret"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setVaultSecret(e.target.value);
+                        clearValidationError("vault_secret");
+                      }}
+                      label="Id"
+                      value={vaultSecret}
+                      error={validationErrors["vault_secret"] || ""}
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      type="number"
+                      min="0"
+                      id="vault_retry"
+                      name="vault_retry"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setVaultRetry(e.target.value);
+                      }}
+                      label="Retry"
+                      value={vaultRetry}
+                      required
+                    />
+                  </Grid>
+                  <h5>TLS</h5>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".key,.pem"
+                      id="vault_key"
+                      name="clievault_keyntCert"
+                      label="Key"
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".cer,.crt,.cert,.pem"
+                      id="vault_cert"
+                      name="vault_cert"
+                      label="Cert"
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".cer,.crt,.cert,.pem"
+                      id="vault_ca"
+                      name="vault_ca"
+                      label="CA"
+                      required
+                    />
+                  </Grid>
+                  <h5>Status</h5>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      type="number"
+                      min="0"
+                      id="vault_ping"
+                      name="vault_ping"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setVaultPing(e.target.value);
+                      }}
+                      label="Ping"
+                      value={vaultPing}
+                      required
+                    />
+                  </Grid>
                 </React.Fragment>
               )}
               {encryptionType === "aws" && (
