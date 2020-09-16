@@ -32,7 +32,7 @@ import { modalBasic } from "../../Common/FormComponents/common/styleLibrary";
 import { IVolumeConfiguration, IZone } from "./types";
 import CheckboxWrapper from "../../Common/FormComponents/CheckboxWrapper/CheckboxWrapper";
 import SelectWrapper from "../../Common/FormComponents/SelectWrapper/SelectWrapper";
-import { k8sfactorForDropdown } from "../../../../common/utils";
+import { getBytes, k8sfactorForDropdown } from "../../../../common/utils";
 import {
   commonFormValidation,
   IValidation,
@@ -104,9 +104,7 @@ const AddTenant = ({
   const [addError, setAddError] = useState<string>("");
   const [tenantName, setTenantName] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
-  const [volumeConfiguration, setVolumeConfiguration] = useState<
-    IVolumeConfiguration
-  >({ size: 0, storage_class: "" });
+  const [volumeSize, setVolumeSize] = useState<string>("1");
   const [enableTLS, setEnableTLS] = useState<boolean>(false);
   const [sizeFactor, setSizeFactor] = useState<string>("Gi");
   const [storageClasses, setStorageClassesList] = useState<Opts[]>([]);
@@ -251,6 +249,39 @@ const AddTenant = ({
   }, [tenantName, namespace, selectedStorageClass, storageClasses]);
 
   useEffect(() => {
+    const parsedSize = getBytes(volumeSize, sizeFactor);
+    const commonValidation = commonFormValidation([
+      {
+        fieldKey: "nodes",
+        required: true,
+        value: nodes,
+      },
+      {
+        fieldKey: "volume_size",
+        required: true,
+        value: volumeSize,
+        customValidation: parsedSize < 1073741824,
+        customValidationMessage: "Volume size must be greater than 1Gi",
+      },
+      {
+        fieldKey: "memory_per_node",
+        required: true,
+        value: memoryNode,
+        customValidation: parseInt(memoryNode) < 2,
+        customValidationMessage: "Memory size must be greater than 2Gi",
+      },
+    ]);
+
+    setConfigValid(
+      !("nodes" in commonValidation) &&
+        !("volume_size" in commonValidation) &&
+        !("memory_per_node" in commonValidation)
+    );
+
+    setValidationErrors(commonValidation);
+  }, [nodes, volumeSize, sizeFactor, memoryNode]);
+
+  useEffect(() => {
     let customAccountValidation: IValidation[] = [];
 
     if (customDockerhub) {
@@ -292,8 +323,8 @@ const AddTenant = ({
         enable_tls: enableTLS,
         enable_console: true,
         volume_configuration: {
-          size: `${volumeConfiguration.size}${sizeFactor}`,
-          storage_class: volumeConfiguration.storage_class,
+          size: getBytes(volumeSize, sizeFactor),
+          storage_class: selectedStorageClass,
         },
         zones: [],
       };
@@ -316,16 +347,6 @@ const AddTenant = ({
         });
     }
   }, [addSending]);
-
-  const setVolumeConfig = (item: string, value: string) => {
-    const volumeCopy: IVolumeConfiguration = {
-      size: item !== "size" ? volumeConfiguration.size : parseInt(value),
-      storage_class:
-        item !== "storage_class" ? volumeConfiguration.storage_class : value,
-    };
-
-    setVolumeConfiguration(volumeCopy);
-  };
 
   const storeCertInObject = (certName: string, certValue: string) => {
     const copyCurrentList = { ...filesBase64 };
@@ -1246,7 +1267,7 @@ const AddTenant = ({
                 setNodes(e.target.value);
                 clearValidationError("nodes");
               }}
-              label="Number of Servers"
+              label="Number of Nodes"
               value={nodes}
               min="4"
               required
@@ -1261,11 +1282,11 @@ const AddTenant = ({
                   id="volume_size"
                   name="volume_size"
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setVolumeConfig("size", e.target.value);
+                    setVolumeSize(e.target.value);
                     clearValidationError("volume_size");
                   }}
                   label="Size"
-                  value={"0"}
+                  value={volumeSize}
                   required
                   error={validationErrors["volume_size"] || ""}
                   min="0"
@@ -1292,9 +1313,12 @@ const AddTenant = ({
               name="memory_per_node"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setMemoryNode(e.target.value);
+                clearValidationError("memory_per_node");
               }}
               label="Memory per Node [Gi]"
               value={memoryNode}
+              required
+              error={validationErrors["memory_per_node"] || ""}
               min="0"
             />
           </Grid>
@@ -1375,7 +1399,7 @@ const AddTenant = ({
                 <TableCell align="right" className={classes.tableTitle}>
                   Storage Class
                 </TableCell>
-                <TableCell>{volumeConfiguration.storage_class}</TableCell>
+                <TableCell>{selectedStorageClass}</TableCell>
               </TableRow>
 
               <TableRow>
@@ -1383,7 +1407,7 @@ const AddTenant = ({
                   Volume Size
                 </TableCell>
                 <TableCell>
-                  {volumeConfiguration.size} {sizeFactor}
+                  {volumeSize} {sizeFactor}
                 </TableCell>
               </TableRow>
               {advancedMode && (
