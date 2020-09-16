@@ -139,6 +139,12 @@ const AddTenant = ({
   const [gemaltoToken, setGemaltoToken] = useState<string>("");
   const [gemaltoDomain, setGemaltoDomain] = useState<string>("");
   const [gemaltoRetry, setGemaltoRetry] = useState<string>("0");
+  const [awsEndpoint, setAWSEndpoint] = useState<string>("");
+  const [awsRegion, setAWSRegion] = useState<string>("");
+  const [awsKMSKey, setAWSKMSKey] = useState<string>("");
+  const [awsAccessKey, setAWSAccessKey] = useState<string>("");
+  const [awsSecretKey, setAWSSecretKey] = useState<string>("");
+  const [awsToken, setAWSToken] = useState<string>("");
 
   // Forms Validation
   const [nameTenantValid, setNameTenantValid] = useState<boolean>(false);
@@ -946,7 +952,85 @@ const AddTenant = ({
               )}
               {encryptionType === "aws" && (
                 <React.Fragment>
-                  <h5>AWS</h5>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="aws_endpoint"
+                      name="aws_endpoint"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setAWSEndpoint(e.target.value);
+                        clearValidationError("aws_endpoint");
+                      }}
+                      label="Endpoint"
+                      value={awsEndpoint}
+                      error={validationErrors["aws_endpoint"] || ""}
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="aws_region"
+                      name="aws_region"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setAWSRegion(e.target.value);
+                        clearValidationError("aws_region");
+                      }}
+                      label="Region"
+                      value={awsRegion}
+                      error={validationErrors["aws_region"] || ""}
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="aws_kmsKey"
+                      name="aws_kmsKey"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setAWSKMSKey(e.target.value);
+                      }}
+                      label="KMS Key"
+                      value={awsKMSKey}
+                    />
+                  </Grid>
+                  <h5>Credentials</h5>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="aws_accessKey"
+                      name="aws_accessKey"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setAWSAccessKey(e.target.value);
+                        clearValidationError("aws_accessKey");
+                      }}
+                      label="Access Key"
+                      value={awsAccessKey}
+                      error={validationErrors["aws_accessKey"] || ""}
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="aws_secretKey"
+                      name="aws_secretKey"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setAWSSecretKey(e.target.value);
+                        clearValidationError("aws_secretKey");
+                      }}
+                      label="Secret Key"
+                      value={awsSecretKey}
+                      error={validationErrors["aws_secretKey"] || ""}
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="aws_token"
+                      name="aws_token"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setAWSToken(e.target.value);
+                      }}
+                      label="Secret Key"
+                      value={awsToken}
+                    />
+                  </Grid>
                 </React.Fragment>
               )}
               {encryptionType === "gemalto" && (
