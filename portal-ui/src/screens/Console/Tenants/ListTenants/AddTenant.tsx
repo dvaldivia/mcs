@@ -40,6 +40,7 @@ import GenericWizard from "../../Common/GenericWizard/GenericWizard";
 import { IWizardElement } from "../../Common/GenericWizard/types";
 import { NewServiceAccount } from "../../Common/CredentialsPrompt/types";
 import RadioGroupSelector from "../../Common/FormComponents/RadioGroupSelector/RadioGroupSelector";
+import FileSelector from "../../Common/FormComponents/FileSelector/FileSelector";
 
 interface IAddTenantProps {
   open: boolean;
@@ -131,6 +132,7 @@ const AddTenant = ({
   const [ADGroupBaseDN, setADGroupBaseDN] = useState<string>("");
   const [ADGroupSearchFilter, setADGroupSearchFilter] = useState<string>("");
   const [ADNameAttribute, setADNameAttribute] = useState<string>("");
+  const [tlsType, setTLSType] = useState<string>("autocert");
 
   // Forms Validation
   const [nameTenantValid, setNameTenantValid] = useState<boolean>(false);
@@ -716,6 +718,112 @@ const AddTenant = ({
                   required
                 />
               </Grid>
+            </React.Fragment>
+          )}
+        </React.Fragment>
+      ),
+      buttons: [
+        cancelButton,
+        { label: "Back", type: "back", enabled: true },
+        { label: "Next", type: "next", enabled: true },
+      ],
+    },
+    {
+      label: "Security",
+      advancedOnly: true,
+      componentRender: (
+        <React.Fragment>
+          <div className={classes.headerElement}>
+            <h3>Security</h3>
+          </div>
+          <Grid item xs={12}>
+            <CheckboxWrapper
+              value="enableTLS"
+              id="enableTLS"
+              name="enableTLS"
+              checked={enableTLS}
+              onChange={(e) => {
+                const targetD = e.target;
+                const checked = targetD.checked;
+
+                setEnableTLS(checked);
+              }}
+              label={"Enable TLS"}
+            />
+            Enable TLS for the tenant, this is required for Encryption
+            Configuration
+          </Grid>
+          {enableTLS && (
+            <React.Fragment>
+              <Grid item xs={12}>
+                <RadioGroupSelector
+                  currentSelection={tlsType}
+                  id="tls-options"
+                  name="tls-options"
+                  label="TLS Options"
+                  onChange={(e) => {
+                    setTLSType(e.target.value);
+                  }}
+                  selectorOptions={[
+                    { label: "Autocert", value: "autocert" },
+                    { label: "Custom Certificate", value: "customcert" },
+                  ]}
+                />
+              </Grid>
+              {tlsType !== "autocert" && (
+                <React.Fragment>
+                  <h5>MinIO TLS Certs</h5>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".key,.pem"
+                      id="tlsKey"
+                      name="tlsKey"
+                      label="Key"
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".cer,.crt,.cert,.pem"
+                      id="tlsCert"
+                      name="tlsCert"
+                      label="Cert"
+                      required
+                    />
+                  </Grid>
+                  <h5>Console TLS Certs</h5>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".key,.pem"
+                      id="consoleKey"
+                      name="consoleKey"
+                      label="Key"
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".cer,.crt,.cert,.pem"
+                      id="consoleCert"
+                      name="consoleCert"
+                      label="Cert"
+                      required
+                    />
+                  </Grid>
+                </React.Fragment>
+              )}
             </React.Fragment>
           )}
         </React.Fragment>
