@@ -232,12 +232,23 @@ const AddTenant = ({
           "Name only can contain lowercase letters, numbers and '-'. Min. Length: 3",
         value: tenantName,
       },
+      {
+        fieldKey: "namespace",
+        required: true,
+        value: tenantName,
+        customValidation: storageClasses.length < 1,
+        customValidationMessage: "Please enter a valid namespace",
+      },
     ]);
 
-    setNameTenantValid(!("tenant-name" in commonValidation));
+    setNameTenantValid(
+      !("tenant-name" in commonValidation) &&
+        !("namespace" in commonValidation) &&
+        storageClasses.length > 0
+    );
 
     setValidationErrors(commonValidation);
-  }, [tenantName]);
+  }, [tenantName, namespace, selectedStorageClass, storageClasses]);
 
   useEffect(() => {
     let customAccountValidation: IValidation[] = [];
