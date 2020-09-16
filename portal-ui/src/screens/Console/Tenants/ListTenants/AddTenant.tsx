@@ -103,16 +103,10 @@ const AddTenant = ({
   const [addError, setAddError] = useState<string>("");
   const [tenantName, setTenantName] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
-  const [serviceName, setServiceName] = useState<string>("");
   const [zones, setZones] = useState<IZone[]>([]);
-  const [volumesPerServer, setVolumesPerServer] = useState<number>(0);
   const [volumeConfiguration, setVolumeConfiguration] = useState<
     IVolumeConfiguration
   >({ size: 0, storage_class: "" });
-  const [mountPath, setMountPath] = useState<string>("");
-  const [accessKey, setAccessKey] = useState<string>("");
-  const [secretKey, setSecretKey] = useState<string>("");
-  const [enableConsole, setEnableConsole] = useState<boolean>(true);
   const [enableTLS, setEnableTLS] = useState<boolean>(false);
   const [sizeFactor, setSizeFactor] = useState<string>("Gi");
   const [storageClasses, setStorageClassesList] = useState<Opts[]>([]);
@@ -162,10 +156,8 @@ const AddTenant = ({
   const [nameTenantValid, setNameTenantValid] = useState<boolean>(false);
   const [configValid, setConfigValid] = useState<boolean>(false);
   const [configureValid, setConfigureValid] = useState<boolean>(false);
-  const [zonesValid, setZonesValid] = useState<boolean>(false);
 
   // Custom Elements
-  const [customACCK, setCustomACCK] = useState<boolean>(false);
   const [customDockerhub, setCustomDockerhub] = useState<boolean>(false);
 
   useEffect(() => {
@@ -182,46 +174,7 @@ const AddTenant = ({
   }, [tenantName]);
 
   useEffect(() => {
-    let subValidation = validationElements.slice(1, 3);
-
-    if (!advancedMode) {
-      subValidation.push({
-        fieldKey: "servers",
-        required: true,
-        pattern: /\d+/,
-        customPatternMessage: "Field must be numeric",
-        value: zones.length > 0 ? zones[0].servers.toString(10) : "0",
-      });
-    }
-
-    const commonValidation = commonFormValidation(subValidation);
-
-    setConfigValid(
-      !("volumes_per_server" in commonValidation) &&
-        !("volume_size" in commonValidation) &&
-        !("servers" in commonValidation)
-    );
-
-    setValidationErrors(commonValidation);
-  }, [volumesPerServer, volumeConfiguration, zones]);
-
-  useEffect(() => {
     let customAccountValidation: IValidation[] = [];
-    if (customACCK) {
-      customAccountValidation = [
-        ...customAccountValidation,
-        {
-          fieldKey: "access_key",
-          required: true,
-          value: accessKey,
-        },
-        {
-          fieldKey: "secret_key",
-          required: true,
-          value: secretKey,
-        },
-      ];
-    }
 
     if (customDockerhub) {
       customAccountValidation = [
@@ -241,23 +194,7 @@ const AddTenant = ({
     setConfigureValid(Object.keys(commonVal).length === 0);
 
     setValidationErrors(commonVal);
-  }, [customACCK, customDockerhub, accessKey, secretKey, imageName]);
-
-  useEffect(() => {
-    const filteredZones = zones.filter(
-      (zone) => zone.name !== "" && zone.servers !== 0 && !isNaN(zone.servers)
-    );
-
-    if (filteredZones.length > 0) {
-      setZonesValid(true);
-      setValidationErrors({});
-
-      return;
-    }
-
-    setZonesValid(false);
-    setValidationErrors({ zones_selector: "Please add a valid zone" });
-  }, [zones]);
+  }, [customDockerhub, imageName]);
 
   /* End Validation of pages */
 
@@ -271,24 +208,11 @@ const AddTenant = ({
       value: tenantName,
     },
     {
-      fieldKey: "volumes_per_server",
-      required: true,
-      pattern: /\d+/,
-      customPatternMessage: "Field must be numeric",
-      value: volumesPerServer.toString(10),
-    },
-    {
       fieldKey: "volume_size",
       required: true,
       pattern: /\d+/,
       customPatternMessage: "Field must be numeric",
       value: volumeConfiguration.size.toString(10),
-    },
-
-    {
-      fieldKey: "service_name",
-      required: false,
-      value: serviceName,
     },
   ];
 
@@ -315,10 +239,7 @@ const AddTenant = ({
           service_name: tenantName,
           image: imageName,
           enable_tls: enableTLS,
-          enable_console: enableConsole,
-          access_key: accessKey,
-          secret_key: secretKey,
-          volumes_per_server: volumesPerServer,
+          enable_console: true,
           volume_configuration: {
             size: `${volumeConfiguration.size}${sizeFactor}`,
             storage_class: volumeConfiguration.storage_class,
@@ -1406,22 +1327,6 @@ const AddTenant = ({
                 </TableCell>
                 <TableCell>{tenantName}</TableCell>
               </TableRow>
-              {customACCK && (
-                <React.Fragment>
-                  <TableRow>
-                    <TableCell align="right" className={classes.tableTitle}>
-                      Access Key
-                    </TableCell>
-                    <TableCell>{accessKey}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell align="right" className={classes.tableTitle}>
-                      Secret Key
-                    </TableCell>
-                    <TableCell>{secretKey}</TableCell>
-                  </TableRow>
-                </React.Fragment>
-              )}
 
               {customDockerhub && (
                 <TableRow>
@@ -1429,15 +1334,6 @@ const AddTenant = ({
                     MinIO Image
                   </TableCell>
                   <TableCell>{imageName}</TableCell>
-                </TableRow>
-              )}
-
-              {serviceName !== "" && (
-                <TableRow>
-                  <TableCell align="right" className={classes.tableTitle}>
-                    Service Name
-                  </TableCell>
-                  <TableCell>{serviceName}</TableCell>
                 </TableRow>
               )}
 
@@ -1456,21 +1352,7 @@ const AddTenant = ({
                 </TableCell>
                 <TableCell>{volumeConfiguration.storage_class}</TableCell>
               </TableRow>
-              {mountPath !== "" && (
-                <TableRow>
-                  <TableCell align="right" className={classes.tableTitle}>
-                    Mount Path
-                  </TableCell>
-                  <TableCell>{mountPath}</TableCell>
-                </TableRow>
-              )}
 
-              <TableRow>
-                <TableCell align="right" className={classes.tableTitle}>
-                  Volumes per Server
-                </TableCell>
-                <TableCell>{volumesPerServer}</TableCell>
-              </TableRow>
               <TableRow>
                 <TableCell align="right" className={classes.tableTitle}>
                   Volume Size
@@ -1492,14 +1374,6 @@ const AddTenant = ({
                       Enable TLS
                     </TableCell>
                     <TableCell>{enableTLS ? "Enabled" : "Disabled"}</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell align="right" className={classes.tableTitle}>
-                      Enable Console
-                    </TableCell>
-                    <TableCell>
-                      {enableConsole ? "Enabled" : "Disabled"}
-                    </TableCell>
                   </TableRow>
                 </React.Fragment>
               )}
