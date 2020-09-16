@@ -367,6 +367,7 @@ const AddTenant = ({
               label="Namespace"
               value={namespace}
               error={validationErrors["namespace"] || ""}
+              required
             />
           </Grid>
           <Grid item xs={12}>
@@ -380,6 +381,7 @@ const AddTenant = ({
               label="Storage Class"
               value={selectedStorageClass || ""}
               options={storageClasses}
+              disabled={storageClasses.length < 1}
             />
           </Grid>
           <Grid item xs={12}>
