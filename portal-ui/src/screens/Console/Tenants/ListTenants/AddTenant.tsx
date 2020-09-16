@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import debounce from "lodash/debounce";
+import get from "lodash/get";
 import ModalWrapper from "../../Common/ModalWrapper/ModalWrapper";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -108,6 +110,7 @@ const AddTenant = ({
   const [enableTLS, setEnableTLS] = useState<boolean>(false);
   const [sizeFactor, setSizeFactor] = useState<string>("Gi");
   const [storageClasses, setStorageClassesList] = useState<Opts[]>([]);
+  const [selectedStorageClass, setSelectedStorageClass] = useState<string>("");
   const [validationErrors, setValidationErrors] = useState<any>({});
   const [namespace, setNamespace] = useState<string>("");
   const [advancedMode, setAdvancedMode] = useState<boolean>(false);
@@ -174,13 +177,62 @@ const AddTenant = ({
     gemaltoCA: "",
   });
 
+  /*Debounce functions*/
+  const getNamespaceInformation = () => {
+    setSelectedStorageClass("");
+    setStorageClassesList([]);
+    api
+      .invoke(
+        "GET",
+        `/api/v1/namespaces/${namespace}/resourcequotas/${namespace}-storagequota`
+      )
+      .then((res: string[]) => {
+        const elements = get(res, "elements", []);
+
+        const newStorage = elements.map((storageClass: any) => {
+          const name = get(storageClass, "name", "").split(".")[0];
+
+          return { label: name, value: name };
+        });
+
+        setStorageClassesList(newStorage);
+
+        if (newStorage.length > 0) {
+          setSelectedStorageClass(newStorage[0].value);
+        }
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
+
+  const debounceNamespace = useCallback(
+    debounce(getNamespaceInformation, 500),
+    [namespace]
+  );
+
   useEffect(() => {
-    fetchStorageClassList();
-  }, []);
+    if (namespace !== "") {
+      debounceNamespace();
+
+      // Cancel previous debounce calls during useEffect cleanup.
+      return debounceNamespace.cancel;
+    }
+  }, [namespace, debounceNamespace]);
+  /*End debounce functions*/
 
   /* Validations of pages */
   useEffect(() => {
-    const commonValidation = commonFormValidation([validationElements[0]]);
+    const commonValidation = commonFormValidation([
+      {
+        fieldKey: "tenant-name",
+        required: true,
+        pattern: /^[a-z0-9-]{3,63}$/,
+        customPatternMessage:
+          "Name only can contain lowercase letters, numbers and '-'. Min. Length: 3",
+        value: tenantName,
+      },
+    ]);
 
     setNameTenantValid(!("tenant-name" in commonValidation));
 
@@ -212,24 +264,6 @@ const AddTenant = ({
 
   /* End Validation of pages */
 
-  const validationElements: IValidation[] = [
-    {
-      fieldKey: "tenant-name",
-      required: true,
-      pattern: /^[a-z0-9-]{3,63}$/,
-      customPatternMessage:
-        "Name only can contain lowercase letters, numbers and '-'. Min. Length: 3",
-      value: tenantName,
-    },
-    {
-      fieldKey: "volume_size",
-      required: true,
-      pattern: /\d+/,
-      customPatternMessage: "Field must be numeric",
-      value: volumeConfiguration.size.toString(10),
-    },
-  ];
-
   const clearValidationError = (fieldKey: string) => {
     const newValidationElement = { ...validationErrors };
     delete newValidationElement[fieldKey];
@@ -240,44 +274,35 @@ const AddTenant = ({
   /* Send Information to backend */
   useEffect(() => {
     if (addSending) {
-      const commonValidation = commonFormValidation(validationElements);
+      const data: { [key: string]: any } = {
+        name: tenantName,
+        service_name: tenantName,
+        image: imageName,
+        enable_tls: enableTLS,
+        enable_console: true,
+        volume_configuration: {
+          size: `${volumeConfiguration.size}${sizeFactor}`,
+          storage_class: volumeConfiguration.storage_class,
+        },
+        zones: [],
+      };
 
-      setValidationErrors(commonValidation);
+      api
+        .invoke("POST", `/api/v1/tenants`, data)
+        .then((res) => {
+          const newSrvAcc: NewServiceAccount = {
+            accessKey: res.access_key,
+            secretKey: res.secret_key,
+          };
 
-      if (Object.keys(commonValidation).length === 0) {
-        const data: { [key: string]: any } = {
-          name: tenantName,
-          service_name: tenantName,
-          image: imageName,
-          enable_tls: enableTLS,
-          enable_console: true,
-          volume_configuration: {
-            size: `${volumeConfiguration.size}${sizeFactor}`,
-            storage_class: volumeConfiguration.storage_class,
-          },
-          zones: [],
-        };
-
-        api
-          .invoke("POST", `/api/v1/tenants`, data)
-          .then((res) => {
-            const newSrvAcc: NewServiceAccount = {
-              accessKey: res.access_key,
-              secretKey: res.secret_key,
-            };
-
-            setAddSending(false);
-            setAddError("");
-            closeModalAndRefresh(true, newSrvAcc);
-          })
-          .catch((err) => {
-            setAddSending(false);
-            setAddError(err);
-          });
-      } else {
-        setAddSending(false);
-        setAddError("Please fix the errors in the form and try again");
-      }
+          setAddSending(false);
+          setAddError("");
+          closeModalAndRefresh(true, newSrvAcc);
+        })
+        .catch((err) => {
+          setAddSending(false);
+          setAddError(err);
+        });
     }
   }, [addSending]);
 
@@ -297,31 +322,6 @@ const AddTenant = ({
     copyCurrentList[certName] = certValue;
 
     setFilesBase64(copyCurrentList);
-  };
-
-  const fetchStorageClassList = () => {
-    api
-      .invoke("GET", `/api/v1/storage-classes`)
-      .then((res: string[]) => {
-        let classes: string[] = [];
-        if (res !== null) {
-          classes = res;
-        }
-        setStorageClassesList(
-          classes.map((s: string) => ({
-            label: s,
-            value: s,
-          }))
-        );
-
-        const newStorage = { ...volumeConfiguration };
-        newStorage.storage_class = res[0];
-
-        setVolumeConfiguration(newStorage);
-      })
-      .catch((err: any) => {
-        console.log(err);
-      });
   };
 
   const cancelButton = {
@@ -374,10 +374,11 @@ const AddTenant = ({
               id="storage_class"
               name="storage_class"
               onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
-                setVolumeConfig("storage_class", e.target.value as string);
+                console.log(e.target.value as string);
+                setSelectedStorageClass(e.target.value as string);
               }}
               label="Storage Class"
-              value={volumeConfiguration.storage_class}
+              value={selectedStorageClass || ""}
               options={storageClasses}
             />
           </Grid>
@@ -1251,7 +1252,7 @@ const AddTenant = ({
                     clearValidationError("volume_size");
                   }}
                   label="Size"
-                  value={volumeConfiguration.size.toString(10)}
+                  value={"0"}
                   required
                   error={validationErrors["volume_size"] || ""}
                   min="0"
