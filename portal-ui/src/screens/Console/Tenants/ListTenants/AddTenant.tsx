@@ -153,6 +153,10 @@ const AddTenant = ({
   const [vaultSecret, setVaultSecret] = useState<string>("");
   const [vaultRetry, setVaultRetry] = useState<string>("0");
   const [vaultPing, setVaultPing] = useState<string>("0");
+  const [ecParityChoices, setECParityChoices] = useState<Opts[]>([]);
+  const [nodes, setNodes] = useState<string>("4");
+  const [memoryNode, setMemoryNode] = useState<string>("2");
+  const [ecParity, setECParity] = useState<string>("");
 
   // Forms Validation
   const [nameTenantValid, setNameTenantValid] = useState<boolean>(false);
@@ -1284,54 +1288,23 @@ const AddTenant = ({
         <React.Fragment>
           <div className={classes.headerElement}>
             <h3>Tenant Size</h3>
-            <span>Define the server configuration</span>
+            <span>Please select the desired capacity</span>
           </div>
-          {advancedMode && (
-            <Grid item xs={12}>
-              <InputBoxWrapper
-                id="mount_path"
-                name="mount_path"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setMountPath(e.target.value);
-                }}
-                label="Mount Path"
-                value={mountPath}
-              />
-            </Grid>
-          )}
 
-          {!advancedMode && (
-            <Grid item xs={12}>
-              <InputBoxWrapper
-                id="servers"
-                name="servers"
-                type="number"
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setServersSimple(e.target.value);
-                  clearValidationError("servers");
-                }}
-                label="Number of Servers"
-                value={zones.length > 0 ? zones[0].servers.toString(10) : "0"}
-                min="0"
-                required
-                error={validationErrors["servers"] || ""}
-              />
-            </Grid>
-          )}
           <Grid item xs={12}>
             <InputBoxWrapper
-              id="volumes_per_server"
-              name="volumes_per_server"
+              id="nodes"
+              name="nodes"
               type="number"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                setVolumesPerServer(parseInt(e.target.value));
-                clearValidationError("volumes_per_server");
+                setNodes(e.target.value);
+                clearValidationError("nodes");
               }}
-              label="Volumes per Server"
-              value={volumesPerServer.toString(10)}
-              min="0"
+              label="Number of Servers"
+              value={nodes}
+              min="4"
               required
-              error={validationErrors["volumes_per_server"] || ""}
+              error={validationErrors["nodes"] || ""}
             />
           </Grid>
           <Grid item xs={12}>
@@ -1366,6 +1339,37 @@ const AddTenant = ({
               </div>
             </div>
           </Grid>
+          <Grid item xs={12}>
+            <InputBoxWrapper
+              type="number"
+              id="memory_per_node"
+              name="memory_per_node"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setMemoryNode(e.target.value);
+              }}
+              label="Memory per Node [Gi]"
+              value={memoryNode}
+              min="0"
+            />
+          </Grid>
+          {advancedMode && (
+            <Grid item xs={12}>
+              <SelectWrapper
+                id="ec_parity"
+                name="ec_parity"
+                onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
+                  setECParity(e.target.value as string);
+                }}
+                label="Erasure Code Parity"
+                value={ecParity}
+                options={ecParityChoices}
+              />
+              <span>
+                Please select the desired parity. This setting will change the
+                max usable capacity in the cluster
+              </span>
+            </Grid>
+          )}
         </React.Fragment>
       ),
       buttons: [
