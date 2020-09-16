@@ -135,6 +135,10 @@ const AddTenant = ({
   const [tlsType, setTLSType] = useState<string>("autocert");
   const [enableEncryption, setEnableEncryption] = useState<boolean>(false);
   const [encryptionType, setEncryptionType] = useState<string>("vault");
+  const [gemaltoEndpoint, setGemaltoEndpoint] = useState<string>("");
+  const [gemaltoToken, setGemaltoToken] = useState<string>("");
+  const [gemaltoDomain, setGemaltoDomain] = useState<string>("");
+  const [gemaltoRetry, setGemaltoRetry] = useState<string>("0");
 
   // Forms Validation
   const [nameTenantValid, setNameTenantValid] = useState<boolean>(false);
@@ -947,7 +951,76 @@ const AddTenant = ({
               )}
               {encryptionType === "gemalto" && (
                 <React.Fragment>
-                  <h5>Gemalto</h5>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="gemalto_endpoint"
+                      name="gemalto_endpoint"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setGemaltoEndpoint(e.target.value);
+                        clearValidationError("gemalto_endpoint");
+                      }}
+                      label="Endpoint"
+                      value={gemaltoEndpoint}
+                      error={validationErrors["gemalto_endpoint"] || ""}
+                      required
+                    />
+                  </Grid>
+                  <h5>Credentials</h5>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="gemalto_token"
+                      name="gemalto_token"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setGemaltoToken(e.target.value);
+                        clearValidationError("gemalto_endpoint");
+                      }}
+                      label="Token"
+                      value={gemaltoToken}
+                      error={validationErrors["gemalto_endpoint"] || ""}
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      id="gemalto_domain"
+                      name="gemalto_domain"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setGemaltoDomain(e.target.value);
+                        clearValidationError("gemalto_domain");
+                      }}
+                      label="Domain"
+                      value={gemaltoDomain}
+                      error={validationErrors["gemalto_domain"] || ""}
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <InputBoxWrapper
+                      type="number"
+                      min="0"
+                      id="gemalto_retry"
+                      name="gemalto_retry"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setGemaltoRetry(e.target.value);
+                      }}
+                      label="Domain"
+                      value={gemaltoRetry}
+                      error={validationErrors["gemalto_retry"] || ""}
+                    />
+                  </Grid>
+                  <h5>TLS</h5>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".cer,.crt,.cert,.pem"
+                      id="gemalto_ca"
+                      name="gemalto_ca"
+                      label="CA"
+                      required
+                    />
+                  </Grid>
                 </React.Fragment>
               )}
             </React.Fragment>
