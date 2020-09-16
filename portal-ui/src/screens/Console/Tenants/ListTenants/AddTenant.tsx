@@ -133,6 +133,8 @@ const AddTenant = ({
   const [ADGroupSearchFilter, setADGroupSearchFilter] = useState<string>("");
   const [ADNameAttribute, setADNameAttribute] = useState<string>("");
   const [tlsType, setTLSType] = useState<string>("autocert");
+  const [enableEncryption, setEnableEncryption] = useState<boolean>(false);
+  const [encryptionType, setEncryptionType] = useState<string>("vault");
 
   // Forms Validation
   const [nameTenantValid, setNameTenantValid] = useState<boolean>(false);
@@ -822,6 +824,130 @@ const AddTenant = ({
                       required
                     />
                   </Grid>
+                </React.Fragment>
+              )}
+            </React.Fragment>
+          )}
+        </React.Fragment>
+      ),
+      buttons: [
+        cancelButton,
+        { label: "Back", type: "back", enabled: true },
+        { label: "Next", type: "next", enabled: true },
+      ],
+    },
+    {
+      label: "Encryption",
+      advancedOnly: true,
+      componentRender: (
+        <React.Fragment>
+          <div className={classes.headerElement}>
+            <h3>Encryption</h3>
+            <span>How would you like to encrypt the information at rest.</span>
+          </div>
+          <Grid item xs={12}>
+            <CheckboxWrapper
+              value="enableEncryption"
+              id="enableEncryption"
+              name="enableEncryption"
+              checked={enableEncryption}
+              onChange={(e) => {
+                const targetD = e.target;
+                const checked = targetD.checked;
+
+                setEnableEncryption(checked);
+              }}
+              label={"Enable Server Side Encryption"}
+              disabled={!enableTLS}
+            />
+          </Grid>
+          {enableEncryption && (
+            <React.Fragment>
+              <Grid item xs={12}>
+                <RadioGroupSelector
+                  currentSelection={encryptionType}
+                  id="encryptionType"
+                  name="encryptionType"
+                  label="Encryption Options"
+                  onChange={(e) => {
+                    setEncryptionType(e.target.value);
+                  }}
+                  selectorOptions={[
+                    { label: "Vault", value: "vault" },
+                    { label: "AWS", value: "aws" },
+                    { label: "Gemalto", value: "gemalto" },
+                  ]}
+                />
+              </Grid>
+
+              {enableTLS && tlsType !== "autocert" && (
+                <React.Fragment>
+                  <h5>Server</h5>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".key,.pem"
+                      id="serverKey"
+                      name="serverKey"
+                      label="Key"
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".cer,.crt,.cert,.pem"
+                      id="serverCert"
+                      name="serverCert"
+                      label="Cert"
+                      required
+                    />
+                  </Grid>
+                  <h5>Client</h5>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".key,.pem"
+                      id="clientKey"
+                      name="clientKey"
+                      label="Key"
+                      required
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <FileSelector
+                      onChange={(encodedValue) => {
+                        console.log(encodedValue);
+                      }}
+                      accept=".cer,.crt,.cert,.pem"
+                      id="clientCert"
+                      name="clientCert"
+                      label="Cert"
+                      required
+                    />
+                  </Grid>
+                </React.Fragment>
+              )}
+
+              {encryptionType === "vault" && (
+                <React.Fragment>
+                  <h5>Vault</h5>
+                </React.Fragment>
+              )}
+              {encryptionType === "aws" && (
+                <React.Fragment>
+                  <h5>AWS</h5>
+                </React.Fragment>
+              )}
+              {encryptionType === "gemalto" && (
+                <React.Fragment>
+                  <h5>Gemalto</h5>
                 </React.Fragment>
               )}
             </React.Fragment>
