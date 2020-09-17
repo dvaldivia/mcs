@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import storage from "local-storage-fallback";
+import { IZoneModel } from "./types";
 
 export const units = [
   "B",
@@ -28,6 +29,8 @@ export const units = [
   "YiB",
 ];
 export const k8sUnits = ["Ki", "Mi", "Gi", "Ti", "Pi", "Ei"];
+export const k8sCalcUnits = ["B", ...k8sUnits];
+
 export const niceBytes = (x: string) => {
   let l = 0,
     n = parseInt(x, 10) || 0;
@@ -90,9 +93,16 @@ export const k8sfactorForDropdown = () => {
 };
 
 //getBytes, converts from a value and a unit from units array to bytes
-export const getBytes = (value: string, unit: string) => {
+export const getBytes = (
+  value: string,
+  unit: string,
+  fork8s: boolean = false
+) => {
   const vl: number = parseFloat(value);
-  const powFactor = units.findIndex((element) => element === unit);
+
+  const unitsTake = fork8s ? k8sCalcUnits : units;
+
+  const powFactor = unitsTake.findIndex((element) => element === unit);
 
   if (powFactor == -1) {
     return 0;
@@ -107,4 +117,11 @@ export const getBytes = (value: string, unit: string) => {
 export const getTotalSize = (value: string, unit: string) => {
   const bytes = getBytes(value, unit).toString(10);
   return niceBytes(bytes);
+};
+
+// Zone Name Generator
+export const generateZoneName = (zones: IZoneModel[]) => {
+  const zoneCounter = zones.length;
+
+  return `zone-${zoneCounter}`;
 };

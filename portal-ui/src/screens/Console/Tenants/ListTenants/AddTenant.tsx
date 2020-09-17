@@ -32,7 +32,11 @@ import { modalBasic } from "../../Common/FormComponents/common/styleLibrary";
 import { IVolumeConfiguration, IZone } from "./types";
 import CheckboxWrapper from "../../Common/FormComponents/CheckboxWrapper/CheckboxWrapper";
 import SelectWrapper from "../../Common/FormComponents/SelectWrapper/SelectWrapper";
-import { getBytes, k8sfactorForDropdown } from "../../../../common/utils";
+import {
+  generateZoneName,
+  getBytes,
+  k8sfactorForDropdown,
+} from "../../../../common/utils";
 import {
   commonFormValidation,
   IValidation,
@@ -42,6 +46,7 @@ import { IWizardElement } from "../../Common/GenericWizard/types";
 import { NewServiceAccount } from "../../Common/CredentialsPrompt/types";
 import RadioGroupSelector from "../../Common/FormComponents/RadioGroupSelector/RadioGroupSelector";
 import FileSelector from "../../Common/FormComponents/FileSelector/FileSelector";
+import { IAffinityModel, ITenantCreator } from "../../../../common/types";
 
 interface IAddTenantProps {
   open: boolean;
@@ -142,6 +147,7 @@ const AddTenant = ({
   const [vaultEngine, setVaultEngine] = useState<string>("");
   const [vaultNamespace, setVaultNamespace] = useState<string>("");
   const [vaultPrefix, setVaultPrefix] = useState<string>("");
+  const [vaultAppRoleEngine, setVaultAppRoleEngine] = useState<string>("");
   const [vaultId, setVaultId] = useState<string>("");
   const [vaultSecret, setVaultSecret] = useState<string>("");
   const [vaultRetry, setVaultRetry] = useState<string>("0");
@@ -249,12 +255,17 @@ const AddTenant = ({
   }, [tenantName, namespace, selectedStorageClass, storageClasses]);
 
   useEffect(() => {
-    const parsedSize = getBytes(volumeSize, sizeFactor);
+    const parsedSize = getBytes(volumeSize, sizeFactor, true);
+
+    console.log("parsed size", parsedSize);
+
     const commonValidation = commonFormValidation([
       {
         fieldKey: "nodes",
         required: true,
         value: nodes,
+        customValidation: parseInt(nodes) < 4,
+        customValidationMessage: "Number of nodes cannot be less than 4",
       },
       {
         fieldKey: "volume_size",
@@ -316,21 +327,218 @@ const AddTenant = ({
   /* Send Information to backend */
   useEffect(() => {
     if (addSending) {
-      const data: { [key: string]: any } = {
-        name: tenantName,
-        service_name: tenantName,
-        image: imageName,
-        enable_tls: enableTLS,
-        enable_console: true,
-        volume_configuration: {
-          size: getBytes(volumeSize, sizeFactor),
-          storage_class: selectedStorageClass,
+      const zoneName = generateZoneName([]);
+
+      const hardCodedAffinity: IAffinityModel = {
+        podAntiAffinity: {
+          requiredDuringSchedulingIgnoredDuringExecution: [
+            {
+              labelSelector: {
+                matchExpressions: [
+                  {
+                    key: "v1.min.io/tenant",
+                    operator: "In",
+                    values: [tenantName],
+                  },
+                  {
+                    key: "v1.min.io/zone",
+                    operator: "In",
+                    values: [zoneName],
+                  },
+                ],
+              },
+              topologyKey: "kubernetes.io/hostname",
+            },
+          ],
         },
-        zones: [],
       };
 
+      const ecLimit = "EC:0";
+
+      const erasureCode = ecLimit.split(":")[1];
+
+      let dataSend: ITenantCreator = {
+        name: tenantName,
+        namespace: namespace,
+        access_key: "",
+        secret_key: "",
+        enable_tls: enableTLS && tlsType === "autocert",
+        enable_console: true,
+        enable_prometheus: enablePrometheus,
+        service_name: "",
+        image: imageName,
+        console_image: consoleImage,
+        zones: [
+          {
+            name: zoneName,
+            servers: this.distribution.nodes,
+            volumes_per_server: this.distribution.disks,
+            volume_configuration: {
+              size: this.distribution.pvSize,
+              storage_class_name: selectedStorageClass,
+            },
+            resources: {
+              requests: {
+                memory: this.memorySize.request,
+              },
+              limits: {
+                memory: this.memorySize.limit,
+              },
+            },
+            affinity: hardCodedAffinity,
+          },
+        ],
+        erasureCodingParity: parseInt(erasureCode, 10),
+      };
+
+      if (tlsType === "customcert") {
+        let tenantCerts: any = null;
+        let consoleCerts: any = null;
+        if (filesBase64.tlsCert !== "" && filesBase64.tlsKey !== "") {
+          tenantCerts = {
+            minio: {
+              crt: filesBase64.tlsCert,
+              key: filesBase64.tlsKey,
+            },
+          };
+        }
+
+        if (filesBase64.consoleCert !== "" && filesBase64.consoleKey !== "") {
+          consoleCerts = {
+            console: {
+              crt: filesBase64.consoleCert,
+              key: filesBase64.consoleKey,
+            },
+          };
+        }
+
+        if (tenantCerts || consoleCerts) {
+          dataSend = {
+            ...dataSend,
+            tls: {
+              ...tenantCerts,
+              ...consoleCerts,
+            },
+          };
+        }
+      }
+
+      if (enableEncryption) {
+        let insertEncrypt = {};
+
+        switch (encryptionType) {
+          case "gemalto":
+            insertEncrypt = {
+              gemalto: {
+                keysecure: {
+                  endpoint: gemaltoEndpoint,
+                  credentials: {
+                    token: gemaltoToken,
+                    domain: gemaltoDomain,
+                    retry: gemaltoRetry,
+                  },
+                  tls: {
+                    ca: filesBase64.gemaltoCA,
+                  },
+                },
+              },
+            };
+            break;
+          case "AWS":
+            insertEncrypt = {
+              aws: {
+                secretsmanager: {
+                  endpoint: awsEndpoint,
+                  region: awsRegion,
+                  kmskey: awsKMSKey,
+                  credentials: {
+                    accesskey: awsAccessKey,
+                    secretkey: awsSecretKey,
+                    token: awsToken,
+                  },
+                },
+              },
+            };
+            break;
+          case "vault":
+            insertEncrypt = {
+              vault: {
+                endpoint: vaultEndpoint,
+                engine: vaultEngine,
+                namespace: vaultNamespace,
+                prefix: vaultPrefix,
+                approle: {
+                  engine: vaultAppRoleEngine,
+                  id: vaultId,
+                  secret: vaultSecret,
+                  retry: vaultRetry,
+                },
+                tls: {
+                  key: filesBase64.vaultKey,
+                  crt: filesBase64.vaultCert,
+                  ca: filesBase64.vaultCA,
+                },
+                status: {
+                  ping: vaultPing,
+                },
+              },
+            };
+            break;
+        }
+
+        dataSend = {
+          ...dataSend,
+          encryption: {
+            client: {
+              key: filesBase64.clientKey,
+              crt: filesBase64.clientCert,
+            },
+            server: {
+              key: filesBase64.serverKey,
+              crt: filesBase64.serverCert,
+            },
+            ...insertEncrypt,
+          },
+        };
+      }
+
+      if (idpSelection !== "none") {
+        let dataIDP: any = {};
+
+        switch (idpSelection) {
+          case "OpenID":
+            dataIDP = {
+              oidc: {
+                url: openIDURL,
+                client_id: openIDClientID,
+                secret_id: openIDSecretID,
+              },
+            };
+            break;
+          case "AD":
+            dataIDP = {
+              active_directory: {
+                url: ADURL,
+                skip_tls_verification: ADSkipTLS,
+                server_insecure: ADServerInsecure,
+                username_format: "",
+                user_search_filter: ADUserNameFilter,
+                group_search_base_dn: ADGroupBaseDN,
+                group_search_filter: ADGroupSearchFilter,
+                group_name_attribute: ADNameAttribute,
+              },
+            };
+            break;
+        }
+
+        dataSend = {
+          ...dataSend,
+          idp: { ...dataIDP },
+        };
+      }
+
       api
-        .invoke("POST", `/api/v1/tenants`, data)
+        .invoke("POST", `/api/v1/tenants`, dataSend)
         .then((res) => {
           const newSrvAcc: NewServiceAccount = {
             accessKey: res.access_key,
@@ -977,13 +1185,13 @@ const AddTenant = ({
                   <h5>App Role</h5>
                   <Grid item xs={12}>
                     <InputBoxWrapper
-                      id="vault_engine"
-                      name="vault_engine"
+                      id="vault_approle_engine"
+                      name="vault_approle_engine"
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setVaultEngine(e.target.value);
+                        setVaultAppRoleEngine(e.target.value);
                       }}
                       label="Engine"
-                      value={vaultEngine}
+                      value={vaultAppRoleEngine}
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -1319,7 +1527,7 @@ const AddTenant = ({
               value={memoryNode}
               required
               error={validationErrors["memory_per_node"] || ""}
-              min="0"
+              min="2"
             />
           </Grid>
           {advancedMode && (
