@@ -154,6 +154,7 @@ const AddTenant = ({
   const [vaultPing, setVaultPing] = useState<string>("0");
   const [ecParityChoices, setECParityChoices] = useState<Opts[]>([]);
   const [nodes, setNodes] = useState<string>("4");
+  const [drivesPerNode, setDrivesPerNode] = useState<string>("4");
   const [memoryNode, setMemoryNode] = useState<string>("2");
   const [ecParity, setECParity] = useState<string>("");
 
@@ -271,6 +272,14 @@ const AddTenant = ({
         customValidationMessage: "Number of nodes cannot be less than 4",
       },
       {
+        fieldKey: "drivesPerNode",
+        required: true,
+        value: drivesPerNode,
+        customValidation: parseInt(drivesPerNode) < 4,
+        customValidationMessage:
+          "Number of drives per node cannot be less than 4",
+      },
+      {
         fieldKey: "volume_size",
         required: true,
         value: volumeSize,
@@ -374,7 +383,7 @@ const AddTenant = ({
         zones: [
           {
             name: zoneName,
-            servers: distribution!.nodes,
+            servers: parseInt(nodes),
             volumes_per_server: distribution!.disks,
             volume_configuration: {
               size: `${distribution!.pvSize}`,
@@ -1483,6 +1492,22 @@ const AddTenant = ({
               min="4"
               required
               error={validationErrors["nodes"] || ""}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <InputBoxWrapper
+              id="drivesPerNode"
+              name="drivesPerNode"
+              type="number"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setDrivesPerNode(e.target.value);
+                clearValidationError("drivesPerNode");
+              }}
+              label="Number of Volumes per Node"
+              value={drivesPerNode}
+              min="4"
+              required
+              error={validationErrors["drivesPerNode"] || ""}
             />
           </Grid>
           <Grid item xs={12}>
