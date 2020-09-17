@@ -45,7 +45,7 @@ export interface ITenant {
 export interface IVolumeConfiguration {
   size: string;
   storage_class_name: string;
-  labels: any;
+  // labels: any;
 }
 
 export interface ITenantCreator {

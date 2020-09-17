@@ -29,7 +29,7 @@ import TableRow from "@material-ui/core/TableRow";
 import api from "../../../../common/api";
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { modalBasic } from "../../Common/FormComponents/common/styleLibrary";
-import { IVolumeConfiguration, IZone } from "./types";
+import { Distribution, MemorySize } from "./types";
 import CheckboxWrapper from "../../Common/FormComponents/CheckboxWrapper/CheckboxWrapper";
 import SelectWrapper from "../../Common/FormComponents/SelectWrapper/SelectWrapper";
 import {
@@ -110,7 +110,7 @@ const AddTenant = ({
   const [tenantName, setTenantName] = useState<string>("");
   const [imageName, setImageName] = useState<string>("");
   const [volumeSize, setVolumeSize] = useState<string>("1");
-  const [enableTLS, setEnableTLS] = useState<boolean>(false);
+  const [enableTLS, setEnableTLS] = useState<boolean>(true);
   const [sizeFactor, setSizeFactor] = useState<string>("Gi");
   const [storageClasses, setStorageClassesList] = useState<Opts[]>([]);
   const [selectedStorageClass, setSelectedStorageClass] = useState<string>("");
@@ -164,6 +164,9 @@ const AddTenant = ({
 
   // Custom Elements
   const [customDockerhub, setCustomDockerhub] = useState<boolean>(false);
+
+  const [distribution, setDistribution] = useState<Distribution | null>(null);
+  const [memorySize, setMemorySize] = useState<MemorySize | null>(null);
 
   // FilesBase64
   const [filesBase64, setFilesBase64] = useState<any>({
@@ -371,18 +374,18 @@ const AddTenant = ({
         zones: [
           {
             name: zoneName,
-            servers: this.distribution.nodes,
-            volumes_per_server: this.distribution.disks,
+            servers: distribution!.nodes,
+            volumes_per_server: distribution!.disks,
             volume_configuration: {
-              size: this.distribution.pvSize,
+              size: `${distribution!.pvSize}`,
               storage_class_name: selectedStorageClass,
             },
             resources: {
               requests: {
-                memory: this.memorySize.request,
+                memory: memorySize!.request,
               },
               limits: {
-                memory: this.memorySize.limit,
+                memory: memorySize!.limit,
               },
             },
             affinity: hardCodedAffinity,

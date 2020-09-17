@@ -44,3 +44,16 @@ export interface ITenant {
 export interface ITenantsResponse {
   tenants: ITenant[];
 }
+
+export interface Distribution {
+  error: number;
+  nodes: number;
+  persistentVolumes: number;
+  disks: number;
+  pvSize: number;
+}
+export interface MemorySize {
+  error: number;
+  request: number;
+  limit: number;
+}
