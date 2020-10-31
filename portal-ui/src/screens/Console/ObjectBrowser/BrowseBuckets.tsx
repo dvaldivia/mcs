@@ -89,6 +89,11 @@ const styles = (theme: Theme) =>
       height: 40,
       marginRight: 10,
     },
+    "@global": {
+      ".rowElementRaw:hover  .meow": {
+        backgroundImage: "url(/images/ob_bucket_filled.svg)",
+      },
+    },
     ...actionsTray,
     ...searchField,
     ...objectBrowserCommon,
@@ -186,7 +191,7 @@ const BrowseBuckets = ({
   const renderBucket = (bucketName: string) => {
     return (
       <div className={classes.bucketName}>
-        <div className={classes.iconBucket} />
+        <div className={`${classes.iconBucket} meow`} />
         <span>{bucketName}</span>
       </div>
     );

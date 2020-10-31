@@ -352,7 +352,7 @@ const TableWrapper = ({
                     key={`tb-${entityName}-${index.toString()}`}
                     className={`${findView ? classes.rowClickable : ""} ${
                       classes.rowElement
-                    }`}
+                    } rowElementRaw`}
                     onClick={() => {
                       clickAction(record);
                     }}
