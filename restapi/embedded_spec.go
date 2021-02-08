@@ -203,6 +203,149 @@ func init() {
         }
       }
     },
+    "/admin/tiers": {
+      "get": {
+        "tags": [
+          "AdminAPI"
+        ],
+        "summary": "Returns a list of tiers for ilm",
+        "operationId": "TiersList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tierListResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "AdminAPI"
+        ],
+        "summary": "Allows to configure a new tier",
+        "operationId": "AddTier",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/tier"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tier"
+            }
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/tiers/{type}/{name}": {
+      "get": {
+        "tags": [
+          "AdminAPI"
+        ],
+        "summary": "Get Tier",
+        "operationId": "GetTier",
+        "parameters": [
+          {
+            "enum": [
+              "s3",
+              "gcs",
+              "azure"
+            ],
+            "type": "string",
+            "name": "type",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tier"
+            }
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/tiers/{type}/{name}/credentials": {
+      "put": {
+        "tags": [
+          "AdminAPI"
+        ],
+        "summary": "Edit Tier Credentials",
+        "operationId": "EditTierCredentials",
+        "parameters": [
+          {
+            "enum": [
+              "s3",
+              "gcs",
+              "azure"
+            ],
+            "type": "string",
+            "name": "type",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/tierCredentialsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response."
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/buckets": {
       "get": {
         "tags": [
@@ -472,6 +615,105 @@ func init() {
             "schema": {
               "$ref": "#/definitions/notificationDeleteRequest"
             }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A successful response."
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/buckets/{bucket_name}/lifecycle": {
+      "get": {
+        "tags": [
+          "UserAPI"
+        ],
+        "summary": "Bucket Lifecycle",
+        "operationId": "GetBucketLifecycle",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "bucket_name",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bucketLifecycleResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "UserAPI"
+        ],
+        "summary": "Add Bucket Lifecycle",
+        "operationId": "AddBucketLifecycle",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "bucket_name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addBucketLifecycle"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "A successful response."
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/buckets/{bucket_name}/lifecycle/{lifecycle_id}": {
+      "delete": {
+        "tags": [
+          "UserAPI"
+        ],
+        "summary": "Delete Lifecycle rule",
+        "operationId": "DeleteBucketLifecycle",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "bucket_name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "lifecycle_id",
+            "in": "path",
+            "required": true
           }
         ],
         "responses": {
@@ -3117,6 +3359,51 @@ func init() {
         }
       }
     },
+    "addBucketLifecycle": {
+      "type": "object",
+      "properties": {
+        "disable": {
+          "type": "boolean"
+        },
+        "expired_object_delete_marker": {
+          "type": "boolean"
+        },
+        "expiry_date": {
+          "type": "string"
+        },
+        "expiry_days": {
+          "type": "string"
+        },
+        "noncurrentversion_expiration_days": {
+          "type": "integer",
+          "format": "int32",
+          "default": 0
+        },
+        "noncurrentversion_transition_days": {
+          "type": "integer",
+          "format": "int32",
+          "default": 0
+        },
+        "noncurrentversion_transition_storage_class": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "storage_class": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "string"
+        },
+        "transition_date": {
+          "type": "string"
+        },
+        "transition_days": {
+          "type": "string"
+        }
+      }
+    },
     "addBucketReplication": {
       "type": "object",
       "properties": {
@@ -3331,6 +3618,17 @@ func init() {
         },
         "ignoreExisting": {
           "type": "boolean"
+        }
+      }
+    },
+    "bucketLifecycleResponse": {
+      "type": "object",
+      "properties": {
+        "lifecycle": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/objectBucketLifecycle"
+          }
         }
       }
     },
@@ -3726,6 +4024,21 @@ func init() {
         }
       }
     },
+    "expirationResponse": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "days": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "delete_marker": {
+          "type": "boolean"
+        }
+      }
+    },
     "gcpConfiguration": {
       "type": "object",
       "required": [
@@ -3966,6 +4279,17 @@ func init() {
         },
         "storage_capacity": {
           "type": "integer"
+        }
+      }
+    },
+    "lifecycleTag": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
         }
       }
     },
@@ -4429,6 +4753,32 @@ func init() {
         "delete",
         "get"
       ]
+    },
+    "objectBucketLifecycle": {
+      "type": "object",
+      "properties": {
+        "expiration": {
+          "$ref": "#/definitions/expirationResponse"
+        },
+        "id": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lifecycleTag"
+          }
+        },
+        "transition": {
+          "$ref": "#/definitions/transitionResponse"
+        }
+      }
     },
     "objectLegalHoldStatus": {
       "type": "string",
@@ -5307,6 +5657,142 @@ func init() {
         }
       }
     },
+    "tier": {
+      "type": "object",
+      "properties": {
+        "azure": {
+          "type": "object",
+          "$ref": "#/definitions/tier_azure"
+        },
+        "gcs": {
+          "type": "object",
+          "$ref": "#/definitions/tier_gcs"
+        },
+        "s3": {
+          "type": "object",
+          "$ref": "#/definitions/tier_s3"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "s3",
+            "gcs",
+            "azure",
+            "unsupported"
+          ]
+        }
+      }
+    },
+    "tierCredentialsRequest": {
+      "type": "object",
+      "properties": {
+        "access_key": {
+          "type": "string"
+        },
+        "creds": {
+          "description": "a base64 encoded value",
+          "type": "string"
+        },
+        "secret_key": {
+          "type": "string"
+        }
+      }
+    },
+    "tierListResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tier"
+          }
+        }
+      }
+    },
+    "tier_azure": {
+      "type": "object",
+      "properties": {
+        "accountkey": {
+          "type": "string"
+        },
+        "accountname": {
+          "type": "string"
+        },
+        "bucket": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "storageclass": {
+          "type": "string"
+        }
+      }
+    },
+    "tier_gcs": {
+      "type": "object",
+      "properties": {
+        "bucket": {
+          "type": "string"
+        },
+        "creds": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "storageclass": {
+          "type": "string"
+        }
+      }
+    },
+    "tier_s3": {
+      "type": "object",
+      "properties": {
+        "accesskey": {
+          "type": "string"
+        },
+        "bucket": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "secretkey": {
+          "type": "string"
+        },
+        "storageclass": {
+          "type": "string"
+        }
+      }
+    },
     "tlsConfiguration": {
       "type": "object",
       "properties": {
@@ -5325,6 +5811,21 @@ func init() {
           "items": {
             "$ref": "#/definitions/keyPairConfiguration"
           }
+        }
+      }
+    },
+    "transitionResponse": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "days": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "storage_class": {
+          "type": "string"
         }
       }
     },
@@ -5718,6 +6219,149 @@ func init() {
         }
       }
     },
+    "/admin/tiers": {
+      "get": {
+        "tags": [
+          "AdminAPI"
+        ],
+        "summary": "Returns a list of tiers for ilm",
+        "operationId": "TiersList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tierListResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "AdminAPI"
+        ],
+        "summary": "Allows to configure a new tier",
+        "operationId": "AddTier",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/tier"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tier"
+            }
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/tiers/{type}/{name}": {
+      "get": {
+        "tags": [
+          "AdminAPI"
+        ],
+        "summary": "Get Tier",
+        "operationId": "GetTier",
+        "parameters": [
+          {
+            "enum": [
+              "s3",
+              "gcs",
+              "azure"
+            ],
+            "type": "string",
+            "name": "type",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tier"
+            }
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/admin/tiers/{type}/{name}/credentials": {
+      "put": {
+        "tags": [
+          "AdminAPI"
+        ],
+        "summary": "Edit Tier Credentials",
+        "operationId": "EditTierCredentials",
+        "parameters": [
+          {
+            "enum": [
+              "s3",
+              "gcs",
+              "azure"
+            ],
+            "type": "string",
+            "name": "type",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/tierCredentialsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response."
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
     "/buckets": {
       "get": {
         "tags": [
@@ -5987,6 +6631,105 @@ func init() {
             "schema": {
               "$ref": "#/definitions/notificationDeleteRequest"
             }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "A successful response."
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/buckets/{bucket_name}/lifecycle": {
+      "get": {
+        "tags": [
+          "UserAPI"
+        ],
+        "summary": "Bucket Lifecycle",
+        "operationId": "GetBucketLifecycle",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "bucket_name",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/bucketLifecycleResponse"
+            }
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "UserAPI"
+        ],
+        "summary": "Add Bucket Lifecycle",
+        "operationId": "AddBucketLifecycle",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "bucket_name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/addBucketLifecycle"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "A successful response."
+          },
+          "default": {
+            "description": "Generic error response.",
+            "schema": {
+              "$ref": "#/definitions/error"
+            }
+          }
+        }
+      }
+    },
+    "/buckets/{bucket_name}/lifecycle/{lifecycle_id}": {
+      "delete": {
+        "tags": [
+          "UserAPI"
+        ],
+        "summary": "Delete Lifecycle rule",
+        "operationId": "DeleteBucketLifecycle",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "bucket_name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "lifecycle_id",
+            "in": "path",
+            "required": true
           }
         ],
         "responses": {
@@ -9241,6 +9984,51 @@ func init() {
         }
       }
     },
+    "addBucketLifecycle": {
+      "type": "object",
+      "properties": {
+        "disable": {
+          "type": "boolean"
+        },
+        "expired_object_delete_marker": {
+          "type": "boolean"
+        },
+        "expiry_date": {
+          "type": "string"
+        },
+        "expiry_days": {
+          "type": "string"
+        },
+        "noncurrentversion_expiration_days": {
+          "type": "integer",
+          "format": "int32",
+          "default": 0
+        },
+        "noncurrentversion_transition_days": {
+          "type": "integer",
+          "format": "int32",
+          "default": 0
+        },
+        "noncurrentversion_transition_storage_class": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "storage_class": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "string"
+        },
+        "transition_date": {
+          "type": "string"
+        },
+        "transition_days": {
+          "type": "string"
+        }
+      }
+    },
     "addBucketReplication": {
       "type": "object",
       "properties": {
@@ -9455,6 +10243,17 @@ func init() {
         },
         "ignoreExisting": {
           "type": "boolean"
+        }
+      }
+    },
+    "bucketLifecycleResponse": {
+      "type": "object",
+      "properties": {
+        "lifecycle": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/objectBucketLifecycle"
+          }
         }
       }
     },
@@ -9850,6 +10649,21 @@ func init() {
         }
       }
     },
+    "expirationResponse": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "days": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "delete_marker": {
+          "type": "boolean"
+        }
+      }
+    },
     "gcpConfiguration": {
       "type": "object",
       "required": [
@@ -10090,6 +10904,17 @@ func init() {
         },
         "storage_capacity": {
           "type": "integer"
+        }
+      }
+    },
+    "lifecycleTag": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
         }
       }
     },
@@ -10509,6 +11334,32 @@ func init() {
         "delete",
         "get"
       ]
+    },
+    "objectBucketLifecycle": {
+      "type": "object",
+      "properties": {
+        "expiration": {
+          "$ref": "#/definitions/expirationResponse"
+        },
+        "id": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lifecycleTag"
+          }
+        },
+        "transition": {
+          "$ref": "#/definitions/transitionResponse"
+        }
+      }
     },
     "objectLegalHoldStatus": {
       "type": "string",
@@ -11296,6 +12147,142 @@ func init() {
         }
       }
     },
+    "tier": {
+      "type": "object",
+      "properties": {
+        "azure": {
+          "type": "object",
+          "$ref": "#/definitions/tier_azure"
+        },
+        "gcs": {
+          "type": "object",
+          "$ref": "#/definitions/tier_gcs"
+        },
+        "s3": {
+          "type": "object",
+          "$ref": "#/definitions/tier_s3"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "s3",
+            "gcs",
+            "azure",
+            "unsupported"
+          ]
+        }
+      }
+    },
+    "tierCredentialsRequest": {
+      "type": "object",
+      "properties": {
+        "access_key": {
+          "type": "string"
+        },
+        "creds": {
+          "description": "a base64 encoded value",
+          "type": "string"
+        },
+        "secret_key": {
+          "type": "string"
+        }
+      }
+    },
+    "tierListResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tier"
+          }
+        }
+      }
+    },
+    "tier_azure": {
+      "type": "object",
+      "properties": {
+        "accountkey": {
+          "type": "string"
+        },
+        "accountname": {
+          "type": "string"
+        },
+        "bucket": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "storageclass": {
+          "type": "string"
+        }
+      }
+    },
+    "tier_gcs": {
+      "type": "object",
+      "properties": {
+        "bucket": {
+          "type": "string"
+        },
+        "creds": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "storageclass": {
+          "type": "string"
+        }
+      }
+    },
+    "tier_s3": {
+      "type": "object",
+      "properties": {
+        "accesskey": {
+          "type": "string"
+        },
+        "bucket": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "prefix": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "secretkey": {
+          "type": "string"
+        },
+        "storageclass": {
+          "type": "string"
+        }
+      }
+    },
     "tlsConfiguration": {
       "type": "object",
       "properties": {
@@ -11314,6 +12301,21 @@ func init() {
           "items": {
             "$ref": "#/definitions/keyPairConfiguration"
           }
+        }
+      }
+    },
+    "transitionResponse": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "days": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "storage_class": {
+          "type": "string"
         }
       }
     },

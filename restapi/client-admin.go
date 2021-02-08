@@ -21,7 +21,6 @@ import (
 	"io"
 	"net/http"
 	"path/filepath"
-	"runtime"
 	"time"
 
 	"github.com/minio/console/models"
@@ -50,7 +49,6 @@ func NewAdminClientWithInsecure(url, accessKey, secretKey, sessionToken string, 
 		SessionToken: sessionToken,
 		AppName:      appName,
 		AppVersion:   ConsoleVersion,
-		AppComments:  []string{appName, runtime.GOOS, runtime.GOARCH},
 		Insecure:     insecure,
 	})
 	if err != nil {
@@ -108,6 +106,12 @@ type MinioAdmin interface {
 	changePassword(ctx context.Context, accessKey, secretKey string) error
 
 	serverHealthInfo(ctx context.Context, healthDataTypes []madmin.HealthDataType, deadline time.Duration) <-chan madmin.HealthInfo
+	// List Tiers
+	listTiers(ctx context.Context) ([]*madmin.TierConfig, error)
+	// Add Tier
+	addTier(ctx context.Context, tier *madmin.TierConfig) error
+	// Edit Tier Credentials
+	editTierCreds(ctx context.Context, tierName string, creds madmin.TierCreds) error
 }
 
 // Interface implementation
@@ -296,6 +300,21 @@ func (ac adminClient) setBucketQuota(ctx context.Context, bucket string, quota *
 // serverHealthInfo implements mc.ServerHealthInfo - Connect to a minio server and call Health Info Management API
 func (ac adminClient) serverHealthInfo(ctx context.Context, healthDataTypes []madmin.HealthDataType, deadline time.Duration) <-chan madmin.HealthInfo {
 	return ac.client.ServerHealthInfo(ctx, healthDataTypes, deadline)
+}
+
+// implements madmin.listTiers()
+func (ac adminClient) listTiers(ctx context.Context) ([]*madmin.TierConfig, error) {
+	return ac.client.ListTiers(ctx)
+}
+
+// implements madmin.ServerInfo()
+func (ac adminClient) addTier(ctx context.Context, cfg *madmin.TierConfig) error {
+	return ac.client.AddTier(ctx, cfg)
+}
+
+// implements madmin.ServerInfo()
+func (ac adminClient) editTierCreds(ctx context.Context, tierName string, creds madmin.TierCreds) error {
+	return ac.client.EditTier(ctx, tierName, creds)
 }
 
 func newMAdminClient(sessionClaims *models.Principal) (*madmin.AdminClient, error) {

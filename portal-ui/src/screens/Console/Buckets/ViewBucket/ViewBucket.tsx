@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
+import * as reactMoment from "react-moment";
 import get from "lodash/get";
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
@@ -34,6 +35,7 @@ import {
   BucketReplicationRule,
   BucketReplicationRuleDeleteMarker,
   BucketVersioning,
+  LifeCycleItem,
 } from "../types";
 import { Button } from "@material-ui/core";
 import SetAccessPolicy from "./SetAccessPolicy";
@@ -165,7 +167,7 @@ function TabPanel(props: TabPanelProps) {
       style={{ marginTop: "5px" }}
       {...other}
     >
-      {value === index && <React.Fragment>{children}</React.Fragment>}
+      {value === index && <Fragment>{children}</Fragment>}
     </div>
   );
 }
@@ -211,6 +213,9 @@ const ViewBucket = ({
   const [retentionConfigOpen, setRetentionConfigOpen] = useState<boolean>(
     false
   );
+  const [loadingLifecycle, setLoadingLifecycle] = useState<boolean>(true);
+  const [lifecycleRecords, setLifecycleRecords] = useState<LifeCycleItem[]>([]);
+  const [openLifecycleOpen, setOpenLifecycleOpen] = useState<boolean>(false);
 
   const bucketName = match.params["bucketName"];
 
@@ -315,6 +320,23 @@ const ViewBucket = ({
     }
   }, [loadingEncryption, bucketName]);
 
+  useEffect(() => {
+    if(loadingLifecycle) {
+      api
+        .invoke("GET", `/api/v1/buckets/${bucketName}/lifecycle`)
+        .then((res: any) => {
+          const records = get(res, "lifecycle", []);
+
+          setLifecycleRecords(records || []);
+          setLoadingLifecycle(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setLoadingLifecycle(false);
+        });
+    }
+  }, [loadingLifecycle, setLoadingLifecycle, bucketName])
+
   const loadAllBucketData = () => {
     setLoadingBucket(true);
     setLoadingSize(true);
@@ -368,19 +390,15 @@ const ViewBucket = ({
   }
 
   const eventsDisplay = (events: string[]) => {
-    return <React.Fragment>{events.join(", ")}</React.Fragment>;
+    return <Fragment>{events.join(", ")}</Fragment>;
   };
 
   const ruleDestDisplay = (events: BucketReplicationDestination) => {
-    return (
-      <React.Fragment>
-        {events.bucket.replace("arn:aws:s3:::", "")}
-      </React.Fragment>
-    );
+    return <Fragment>{events.bucket.replace("arn:aws:s3:::", "")}</Fragment>;
   };
 
   const ruleDelDisplay = (events: BucketReplicationRuleDeleteMarker) => {
-    return <React.Fragment>{events.status}</React.Fragment>;
+    return null;
   };
 
   const setOpenReplicationOpen = (open = false) => {
@@ -405,9 +423,69 @@ const ViewBucket = ({
   };
 
   const tableActions = [{ type: "delete", onClick: confirmDeleteEvent }];
+  const lifecycleActions: any[] = [{ type: "delete", onClick: () => {} }];
+
+
+  const expirationRender = (expiration: any) => {
+    if(expiration.days) {
+      return `${expiration.days} day${expiration.days > 1 ? 's' : ''}`
+    }
+
+    if(expiration.date === "0001-01-01T00:00:00Z") {
+      return '';
+    }
+
+    return <reactMoment.default>{expiration.date}</reactMoment.default>;
+  };
+
+  const transitionRender = (transition: any) => {
+    if(transition.days) {
+      return `${transition.days} day${transition.days > 1 ? 's' : ''}`
+    }
+
+    if(transition.date === "0001-01-01T00:00:00Z") {
+      return '';
+    }
+
+    return <reactMoment.default>{transition.date}</reactMoment.default>;
+  }
+
+  const renderStorageClass = (objectST: any) => {
+    const stClass = get(objectST, "transition.storage_class", "");
+
+    return stClass;
+  }
+
+  const lifecycleColumns = [
+    { label: "ID", elementKey: "id" },
+    {
+      label: "Prefix",
+      elementKey: "prefix",
+    },
+    {
+      label: "Status",
+      elementKey: "status",
+    },
+    {
+      label: "Expiration",
+      elementKey: "expiration",
+      renderFunction: expirationRender,
+    },
+    {
+      label: "Transition",
+      elementKey: "transition",
+      renderFunction: transitionRender
+    },
+    {
+      label: "Storage Class",
+      elementKey: "storage_class",
+      renderFunction: renderStorageClass,
+      renderFullObject: true,
+    },
+  ];
 
   return (
-    <React.Fragment>
+    <Fragment>
       {addScreenOpen && (
         <AddEvent
           open={addScreenOpen}
@@ -452,6 +530,7 @@ const ViewBucket = ({
           closeDeleteModalAndRefresh={closeDeleteModalAndRefresh}
         />
       )}
+      {openLifecycleOpen && <Fragment>Lifecycle</Fragment>}
       <PageHeader label={`Bucket > ${match.params["bucketName"]}`} />
       <Grid container>
         <Grid item xs={12} className={classes.container}>
@@ -550,6 +629,7 @@ const ViewBucket = ({
               >
                 <Tab label="Events" {...a11yProps(0)} />
                 <Tab label="Replication" {...a11yProps(1)} />
+                {isVersioned && <Tab label="Lifecycle" {...a11yProps(2)} />}
               </Tabs>
             </Grid>
             <Grid item xs={6} className={classes.actionsTray}>
@@ -577,6 +657,19 @@ const ViewBucket = ({
                   }}
                 >
                   Add Replication Rule
+                </Button>
+              )}
+              {curTab === 2 && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<CreateIcon />}
+                  size="medium"
+                  onClick={() => {
+                    setOpenLifecycleOpen(true);
+                  }}
+                >
+                  Add Lifecycle Rule
                 </Button>
               )}
             </Grid>
@@ -628,10 +721,23 @@ const ViewBucket = ({
                 idField="id"
               />
             </TabPanel>
+            {isVersioned && (
+              <TabPanel index={2} value={curTab}>
+                <TableWrapper
+                  itemActions={lifecycleActions}
+                  columns={lifecycleColumns}
+                  isLoading={loadingLifecycle}
+                  records={lifecycleRecords}
+                  entityName="Lifecycle"
+                  customEmptyMessage="There are no Lifecycle rules yet"
+                  idField="id"
+                />
+              </TabPanel>
+            )}
           </Grid>
         </Grid>
       </Grid>
-    </React.Fragment>
+    </Fragment>
   );
 };
 
