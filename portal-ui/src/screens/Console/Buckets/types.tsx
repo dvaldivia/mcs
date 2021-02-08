@@ -114,3 +114,15 @@ export interface IRemoteBucket {
   status: string;
   service: string;
 }
+
+export interface LifeCycleItem {
+  id: string;
+  prefix: string;
+  enabled: boolean;
+  expiry_enabled: boolean;
+  expiry_days: string;
+  transition_enabled: boolean;
+  transition_days: string;
+  storage_class: string;
+  tags: string;
+}

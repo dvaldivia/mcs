@@ -18,19 +18,25 @@ require (
 	github.com/minio/kes v0.11.0
 	github.com/minio/mc v0.0.0-20201220181029-41c804b179de
 	github.com/minio/minio v0.0.0-20210128013121-e79829b5b368
-	github.com/minio/minio-go/v7 v7.0.8-0.20210127003153-c40722862654
+	github.com/minio/minio-go/v7 v7.0.8
 	github.com/minio/operator v0.0.0-20210201110528-753019b838b4
 	github.com/minio/operator/logsearchapi v0.0.0-20210201110528-753019b838b4
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pquerna/cachecontrol v0.0.0-20180517163645-1555304b9b35 // indirect
+	github.com/rs/xid v1.2.1
 	github.com/secure-io/sio-go v0.3.1
 	github.com/stretchr/testify v1.6.1
 	github.com/unrolled/secure v1.0.7
 	golang.org/x/crypto v0.0.0-20201124201722-c8d3bf9c5392
-	golang.org/x/net v0.0.0-20201216054612-986b41b23924
+	golang.org/x/net v0.0.0-20201224014010-6772e930b67b
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	gopkg.in/yaml.v2 v2.3.0
 	k8s.io/api v0.20.2
 	k8s.io/apimachinery v0.20.2
 	k8s.io/client-go v0.20.2
+)
+
+replace (
+	github.com/minio/mc v0.0.0-20201220181029-41c804b179de => github.com/krisis/mc v0.0.0-20210201232942-01a91b485075
+	github.com/minio/minio v0.0.0-20210128013121-e79829b5b368 => github.com/minio/minio v0.0.0-20210209004334-fbc470fbb427
 )

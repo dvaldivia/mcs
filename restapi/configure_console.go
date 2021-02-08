@@ -105,6 +105,8 @@ func configureAPI(api *operations.ConsoleAPI) http.Handler {
 	registerConfigHandlers(api)
 	// Register bucket events handlers
 	registerBucketEventsHandlers(api)
+	// Register bucket lifecycle handlers
+	registerBucketsLifecycleHandlers(api)
 	// Register service handlers
 	registerServiceHandlers(api)
 	// Register profiling handlers
@@ -125,6 +127,8 @@ func configureAPI(api *operations.ConsoleAPI) http.Handler {
 	registerLogSearchHandlers(api)
 	// Register admin subscription handlers
 	registerSubscriptionHandlers(api)
+	// Register Account handlers
+	registerAdminTiersHandlers(api)
 
 	// Operator Console
 	// Register tenant handlers
