@@ -83,7 +83,8 @@ const DeleteLifecycle = ({
       <DialogContent>
         {deleteLoading && <LinearProgress />}
         <DialogContentText id="alert-dialog-description">
-          Are you sure you want to delete the <strong>{lifecycle}</strong> lifecycle?
+          Are you sure you want to delete the <strong>{lifecycle}</strong>{" "}
+          lifecycle?
         </DialogContentText>
       </DialogContent>
       <DialogActions>

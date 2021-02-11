@@ -557,7 +557,7 @@ const ViewBucket = ({
           closeDeleteModalAndRefresh={closeDeleteLCAndRefresh}
         />
       )}
-      
+
       <PageHeader label={`Bucket > ${match.params["bucketName"]}`} />
       <Grid container>
         <Grid item xs={12} className={classes.container}>
