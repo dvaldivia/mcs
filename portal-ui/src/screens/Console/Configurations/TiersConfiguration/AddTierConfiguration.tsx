@@ -134,7 +134,7 @@ const AddTierConfiguration = ({
       };
 
       api
-        .invoke("POST", `/api/v1/tiers`, payload)
+        .invoke("POST", `/api/v1/admin/tiers`, payload)
         .then(() => {
           setSaving(false);
           saveAndRefresh();
@@ -163,8 +163,73 @@ const AddTierConfiguration = ({
   ]);
 
   useEffect(() => {
+    let valid = true;
+    if (type === "") {
+      valid = false;
+    }
 
-  }, [isFormValid]);
+    if (type === "") {
+      valid = false;
+    }
+    if (name === "") {
+      valid = false;
+    }
+    if (endpoint === "") {
+      valid = false;
+    }
+    if (bucket === "") {
+      valid = false;
+    }
+    if (prefix === "") {
+      valid = false;
+    }
+    if (region === "") {
+      valid = false;
+    }
+    if (storageClass === "") {
+      valid = false;
+    }
+
+    if (type === "s3") {
+      if (accessKey === "") {
+        valid = false;
+      }
+      if (secretKey === "") {
+        valid = false;
+      }
+    }
+
+    if (type === "gcs") {
+      if (creds === "") {
+        valid = false;
+      }
+    }
+
+    if (type === "azure") {
+      if (accountName === "") {
+        valid = false;
+      }
+      if (accountKey === "") {
+        valid = false;
+      }
+    }
+
+    setIsFormValid(valid);
+  }, [
+    accessKey,
+    accountKey,
+    accountName,
+    bucket,
+    creds,
+    endpoint,
+    isFormValid,
+    name,
+    prefix,
+    region,
+    secretKey,
+    storageClass,
+    type,
+  ]);
 
   //Fetch Actions
   const submitForm = (event: React.FormEvent) => {
@@ -331,7 +396,7 @@ const AddTierConfiguration = ({
             type="submit"
             variant="contained"
             color="primary"
-            disabled={saving || type === ""}
+            disabled={saving || !isFormValid}
           >
             Save
           </Button>

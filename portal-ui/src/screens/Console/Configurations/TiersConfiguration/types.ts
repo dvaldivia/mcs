@@ -54,5 +54,5 @@ export interface ITearElement {
 }
 
 export interface ITearResponse {
-    items: ITearElement[]
+  items: ITearElement[];
 }
