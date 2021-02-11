@@ -52,6 +52,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import EnableBucketEncryption from "./EnableBucketEncryption";
 import { connect } from "react-redux";
 import { setErrorSnackMessage } from "../../../../actions";
+import DeleteLifecycle from "./DeleteLifecycle";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -205,6 +206,9 @@ const ViewBucket = ({
     setEnableEncryptionScreenOpen,
   ] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
+  const [deleteLifecycleOpen, setDeleteLifecycleOpen] = useState<boolean>(
+    false
+  );
   const [selectedEvent, setSelectedEvent] = useState<BucketEvent | null>(null);
   const [bucketSize, setBucketSize] = useState<string>("0");
   const [openSetReplication, setOpenSetReplication] = useState<boolean>(false);
@@ -216,6 +220,7 @@ const ViewBucket = ({
   const [loadingLifecycle, setLoadingLifecycle] = useState<boolean>(true);
   const [lifecycleRecords, setLifecycleRecords] = useState<LifeCycleItem[]>([]);
   const [openLifecycleOpen, setOpenLifecycleOpen] = useState<boolean>(false);
+  const [selectedLifecycle, setSelectedLifecycle] = useState<string>("");
 
   const bucketName = match.params["bucketName"];
 
@@ -378,6 +383,13 @@ const ViewBucket = ({
     }
   };
 
+  const closeDeleteLCAndRefresh = (refresh: boolean) => {
+    setDeleteLifecycleOpen(false);
+    if (refresh) {
+      setLoadingLifecycle(true);
+    }
+  };
+
   const confirmDeleteEvent = (evnt: BucketEvent) => {
     setDeleteOpen(true);
     setSelectedEvent(evnt);
@@ -423,7 +435,15 @@ const ViewBucket = ({
   };
 
   const tableActions = [{ type: "delete", onClick: confirmDeleteEvent }];
-  const lifecycleActions: any[] = [{ type: "delete", onClick: () => {} }];
+  const lifecycleActions: any[] = [
+    {
+      type: "delete",
+      onClick: (item: any) => {
+        setSelectedLifecycle(item.id || "");
+        setDeleteLifecycleOpen(true);
+      },
+    },
+  ];
 
   const expirationRender = (expiration: any) => {
     if (expiration.days) {
@@ -527,6 +547,14 @@ const ViewBucket = ({
           selectedBucket={bucketName}
           bucketEvent={selectedEvent}
           closeDeleteModalAndRefresh={closeDeleteModalAndRefresh}
+        />
+      )}
+      {deleteLifecycleOpen && (
+        <DeleteLifecycle
+          deleteOpen={deleteLifecycleOpen}
+          selectedBucket={bucketName}
+          lifecycle={selectedLifecycle}
+          closeDeleteModalAndRefresh={closeDeleteLCAndRefresh}
         />
       )}
       {openLifecycleOpen && <Fragment>Lifecycle</Fragment>}
