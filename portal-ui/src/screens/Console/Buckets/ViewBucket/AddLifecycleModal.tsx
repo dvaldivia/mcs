@@ -1,0 +1,357 @@
+// This file is part of MinIO Console Server
+// Copyright (c) 2021 MinIO, Inc.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import React, { useState, Fragment } from "react";
+import { connect } from "react-redux";
+import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
+import { Button, LinearProgress } from "@material-ui/core";
+import get from "lodash/get";
+import Grid from "@material-ui/core/Grid";
+import { modalBasic } from "../../Common/FormComponents/common/styleLibrary";
+import { IRemoteBucket } from "../types";
+import { setModalErrorSnackMessage } from "../../../../actions";
+import InputBoxWrapper from "../../Common/FormComponents/InputBoxWrapper/InputBoxWrapper";
+import FormSwitchWrapper from "../../Common/FormComponents/FormSwitchWrapper/FormSwitchWrapper";
+import ModalWrapper from "../../Common/ModalWrapper/ModalWrapper";
+import api from "../../../../common/api";
+import DateSelector from "../../Common/FormComponents/DateSelector/DateSelector";
+
+interface IReplicationModal {
+  open: boolean;
+  closeModalAndRefresh: (refresh: boolean) => any;
+  classes: any;
+  bucketName: string;
+  setModalErrorSnackMessage: typeof setModalErrorSnackMessage;
+}
+
+const styles = (theme: Theme) =>
+  createStyles({
+    minTableHeader: {
+      color: "#393939",
+      "& tr": {
+        "& th": {
+          fontWeight: "bold",
+        },
+      },
+    },
+    buttonContainer: {
+      textAlign: "right",
+    },
+    ...modalBasic,
+  });
+
+const AddLifecycleModal = ({
+  open,
+  closeModalAndRefresh,
+  classes,
+  bucketName,
+  setModalErrorSnackMessage,
+}: IReplicationModal) => {
+  const [addLoading, setAddLoading] = useState(false);
+  const [prefix, setPrefix] = useState(bucketName);
+  const [storageClass, setStorageClass] = useState("");
+  const [NCTransitionSC, setNCTransitionSC] = useState("");
+  const [expiredObjectDM, setExpiredObjectDM] = useState<boolean>(false);
+  const [NCExpirationDays, setNCExpirationDays] = useState<string>("0");
+  const [NCTransitionDays, setNCTransitionDays] = useState<string>("0");
+  const [isExpiry, setIsExpiry] = useState<boolean>(false);
+  const [expiryType, setExpiryType] = useState<boolean>(false); // true: date, false: days
+  const [expiryDays, setExpiryDays] = useState<string>("0");
+  const [expiryDate, setExpiryDate] = useState<string>("");
+  const [transitionDays, setTransitionDays] = useState<string>("0");
+  const [transitionDate, setTransitionDate] = useState<string>("");
+  const [transitionType, setTransitionType] = useState<boolean>(false); // true: date, false: days
+
+  const addRecord = () => {
+    let rules = {};
+
+    if (isExpiry) {
+      let expiry = {};
+
+      if (expiryType) {
+        // true: date, false: days
+        expiry = {
+          expiry_date: expiryDate,
+        };
+      } else {
+        expiry = {
+          expiry_days: expiryDays,
+        };
+      }
+
+      rules = {
+        ...expiry,
+        noncurrentversion_expiration_days: NCExpirationDays,
+      };
+    } else {
+      let transition = {};
+
+      if (transitionType) {
+        transition = {
+          transition_date: transitionDate,
+        };
+      } else {
+        transition = {
+          transition_days: transitionDays,
+        };
+      }
+
+      rules = {
+        ...transition,
+        noncurrentversion_transition_days: NCTransitionDays,
+        noncurrentversion_transition_storage_class: NCTransitionSC,
+      };
+    }
+
+    const remoteBucketInfo = {
+      prefix,
+      storage_class: storageClass,
+      expired_object_delete_marker: expiredObjectDM,
+      ...rules,
+    };
+
+    api
+      .invoke("POST", "/api/v1/remote-buckets", remoteBucketInfo)
+      .then(() => {
+        setAddLoading(false);
+        closeModalAndRefresh(true);
+      })
+      .catch((err) => {
+        setAddLoading(false);
+        setModalErrorSnackMessage(err);
+      });
+  };
+
+  return (
+    <ModalWrapper
+      modalOpen={open}
+      onClose={() => {
+        closeModalAndRefresh(false);
+      }}
+      title="Add Lifecycle Rule"
+    >
+      <form
+        noValidate
+        autoComplete="off"
+        onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+          e.preventDefault();
+          setAddLoading(true);
+          addRecord();
+        }}
+      >
+        <Grid container>
+          <Grid item xs={12} className={classes.formScrollable}>
+            <Grid item xs={12}>
+              <InputBoxWrapper
+                id="prefix"
+                name="prefix"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setPrefix(e.target.value);
+                }}
+                label="Prefix"
+                value={prefix}
+              />
+            </Grid>
+            <Fragment>tags: type: string</Fragment>
+            <Grid item xs={12}>
+              <InputBoxWrapper
+                id="storageClass"
+                name="storageClass"
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setStorageClass(e.target.value);
+                }}
+                label="Storage Class"
+                value={storageClass}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormSwitchWrapper
+                value="isExpiry"
+                id="isExpiry"
+                name="isExpiry"
+                checked={isExpiry}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setIsExpiry(event.target.checked);
+                }}
+                label={"ILM Rule"}
+                indicatorLabels={["Expiry", "Transition"]}
+              />
+            </Grid>
+            {isExpiry ? (
+              <Fragment>
+                <Grid item xs={12}>
+                  <FormSwitchWrapper
+                    value="expiryType"
+                    id="expiryType"
+                    name="expiryType"
+                    checked={expiryType}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      setExpiryType(event.target.checked);
+                    }}
+                    label={"Expiry Type"}
+                    indicatorLabels={["Date", "Days"]}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  {expiryType ? (
+                    <DateSelector
+                      id="expiry_date"
+                      label="Expiry Date"
+                      value={expiryDate}
+                      borderBottom={true}
+                      onDateChange={(date: string, isValid: boolean) => {
+                        if (isValid) {
+                          setExpiryDate(date);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <InputBoxWrapper
+                      type="number"
+                      id="expiry_days"
+                      name="expiry_days"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setExpiryDays(e.target.value);
+                      }}
+                      label="Expiry Days"
+                      value={expiryDays}
+                      min="0"
+                    />
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <InputBoxWrapper
+                    type="number"
+                    id="noncurrentversion_expiration_days"
+                    name="noncurrentversion_expiration_days"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setNCExpirationDays(e.target.value);
+                    }}
+                    label="Non-current Expiration Days"
+                    value={NCExpirationDays}
+                    min="0"
+                  />
+                </Grid>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <Grid item xs={12}>
+                  <FormSwitchWrapper
+                    value="transitionType"
+                    id="transitionType"
+                    name="transitionType"
+                    checked={transitionType}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                      setTransitionType(event.target.checked);
+                    }}
+                    label={"Transition Type"}
+                    indicatorLabels={["Date", "Days"]}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  {transitionType ? (
+                    <DateSelector
+                      id="transition_date"
+                      label="Transition Date"
+                      value={transitionDate}
+                      borderBottom={true}
+                      onDateChange={(date: string, isValid: boolean) => {
+                        if (isValid) {
+                          setTransitionDate(date);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <InputBoxWrapper
+                      type="number"
+                      id="transition_days"
+                      name="transition_days"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setTransitionDays(e.target.value);
+                      }}
+                      label="Transition Days"
+                      value={transitionDays}
+                      min="0"
+                    />
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <InputBoxWrapper
+                    type="number"
+                    id="noncurrentversion_transition_days"
+                    name="noncurrentversion_transition_days"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setNCTransitionDays(e.target.value);
+                    }}
+                    label="Non-current Transition Days"
+                    value={NCTransitionDays}
+                    min="0"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <InputBoxWrapper
+                    id="noncurrentversion_t_SC"
+                    name="noncurrentversion_t_SC"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setNCTransitionSC(e.target.value);
+                    }}
+                    placeholder="Set Non-current Version Transition Storage Class"
+                    label="Non-current Version Transition Storage Class"
+                    value={NCTransitionSC}
+                  />
+                </Grid>
+              </Fragment>
+            )}
+            <Grid item xs={12}>
+              <FormSwitchWrapper
+                value="expired_delete_marker"
+                id="expired_delete_marker"
+                name="expired_delete_marker"
+                checked={expiredObjectDM}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  setExpiredObjectDM(event.target.checked);
+                }}
+                label={"Expired Object Delete Marker"}
+                indicatorLabels={["On", "Off"]}
+              />
+            </Grid>
+          </Grid>
+          <Grid item xs={12} className={classes.buttonContainer}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={addLoading}
+            >
+              Save
+            </Button>
+          </Grid>
+          {addLoading && (
+            <Grid item xs={12}>
+              <LinearProgress />
+            </Grid>
+          )}
+        </Grid>
+      </form>
+    </ModalWrapper>
+  );
+};
+
+const connector = connect(null, {
+  setModalErrorSnackMessage,
+});
+
+export default withStyles(styles)(connector(AddLifecycleModal));
