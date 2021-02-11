@@ -219,7 +219,7 @@ const ViewBucket = ({
   );
   const [loadingLifecycle, setLoadingLifecycle] = useState<boolean>(true);
   const [lifecycleRecords, setLifecycleRecords] = useState<LifeCycleItem[]>([]);
-  const [openLifecycleOpen, setOpenLifecycleOpen] = useState<boolean>(false);
+  const [addLifecycleOpen, setAddLifecycleOpen] = useState<boolean>(false);
   const [selectedLifecycle, setSelectedLifecycle] = useState<string>("");
 
   const bucketName = match.params["bucketName"];
@@ -557,7 +557,7 @@ const ViewBucket = ({
           closeDeleteModalAndRefresh={closeDeleteLCAndRefresh}
         />
       )}
-      {openLifecycleOpen && <Fragment>Lifecycle</Fragment>}
+      
       <PageHeader label={`Bucket > ${match.params["bucketName"]}`} />
       <Grid container>
         <Grid item xs={12} className={classes.container}>
@@ -693,7 +693,7 @@ const ViewBucket = ({
                   startIcon={<CreateIcon />}
                   size="medium"
                   onClick={() => {
-                    setOpenLifecycleOpen(true);
+                    setAddLifecycleOpen(true);
                   }}
                 >
                   Add Lifecycle Rule
