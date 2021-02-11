@@ -18,16 +18,15 @@ import React, { useState, Fragment } from "react";
 import { connect } from "react-redux";
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { Button, LinearProgress } from "@material-ui/core";
-import get from "lodash/get";
 import Grid from "@material-ui/core/Grid";
 import { modalBasic } from "../../Common/FormComponents/common/styleLibrary";
-import { IRemoteBucket } from "../types";
 import { setModalErrorSnackMessage } from "../../../../actions";
 import InputBoxWrapper from "../../Common/FormComponents/InputBoxWrapper/InputBoxWrapper";
 import FormSwitchWrapper from "../../Common/FormComponents/FormSwitchWrapper/FormSwitchWrapper";
 import ModalWrapper from "../../Common/ModalWrapper/ModalWrapper";
 import api from "../../../../common/api";
 import DateSelector from "../../Common/FormComponents/DateSelector/DateSelector";
+import QueryMultiSelector from "../../Common/FormComponents/QueryMultiSelector/QueryMultiSelector";
 
 interface IReplicationModal {
   open: boolean;
@@ -165,7 +164,17 @@ const AddLifecycleModal = ({
                 value={prefix}
               />
             </Grid>
-            <Fragment>tags: type: string</Fragment>
+            <Grid item xs={12}>
+                <QueryMultiSelector
+                name="tags"
+                label="Tags"
+                elements={""}
+                onChange={(vl: any) => {console.log(vl);}}
+                keyPlaceholder="Tag Key"
+                valuePlaceholder="Tag Value"
+                withBorder
+                />
+            </Grid>
             <Grid item xs={12}>
               <InputBoxWrapper
                 id="storageClass"
