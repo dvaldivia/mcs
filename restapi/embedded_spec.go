@@ -3372,7 +3372,9 @@ func init() {
           "type": "string"
         },
         "expiry_days": {
-          "type": "string"
+          "type": "integer",
+          "format": "int32",
+          "default": 0
         },
         "noncurrentversion_expiration_days": {
           "type": "integer",
@@ -3400,7 +3402,9 @@ func init() {
           "type": "string"
         },
         "transition_days": {
-          "type": "string"
+          "type": "integer",
+          "format": "int32",
+          "default": 0
         }
       }
     },
@@ -9997,7 +10001,9 @@ func init() {
           "type": "string"
         },
         "expiry_days": {
-          "type": "string"
+          "type": "integer",
+          "format": "int32",
+          "default": 0
         },
         "noncurrentversion_expiration_days": {
           "type": "integer",
@@ -10025,7 +10031,9 @@ func init() {
           "type": "string"
         },
         "transition_days": {
-          "type": "string"
+          "type": "integer",
+          "format": "int32",
+          "default": 0
         }
       }
     },

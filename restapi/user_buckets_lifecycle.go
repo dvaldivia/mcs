@@ -18,9 +18,10 @@ package restapi
 
 import (
 	"context"
-	"time"
 	"fmt"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/rs/xid"
 
@@ -131,9 +132,9 @@ func addBucketLifecycle(ctx context.Context, client MinioClient, params user_api
 		IsStorageClassSet:                       params.Body.StorageClass != "",
 		Tags:                                    params.Body.Tags,
 		ExpiryDate:                              params.Body.ExpiryDate,
-		ExpiryDays:                              params.Body.ExpiryDays,
+		ExpiryDays:                              strconv.Itoa(int(params.Body.ExpiryDays)),
 		TransitionDate:                          params.Body.TransitionDate,
-		TransitionDays:                          params.Body.TransitionDays,
+		TransitionDays:                          strconv.Itoa(int(params.Body.TransitionDays)),
 		StorageClass:                            strings.ToUpper(params.Body.StorageClass),
 		ExpiredObjectDeleteMarker:               params.Body.ExpiredObjectDeleteMarker,
 		NoncurrentVersionExpirationDays:         int(params.Body.NoncurrentversionExpirationDays),

@@ -42,7 +42,7 @@ type AddBucketLifecycle struct {
 	ExpiryDate string `json:"expiry_date,omitempty"`
 
 	// expiry days
-	ExpiryDays string `json:"expiry_days,omitempty"`
+	ExpiryDays int32 `json:"expiry_days,omitempty"`
 
 	// noncurrentversion expiration days
 	NoncurrentversionExpirationDays int32 `json:"noncurrentversion_expiration_days,omitempty"`
@@ -66,7 +66,7 @@ type AddBucketLifecycle struct {
 	TransitionDate string `json:"transition_date,omitempty"`
 
 	// transition days
-	TransitionDays string `json:"transition_days,omitempty"`
+	TransitionDays int32 `json:"transition_days,omitempty"`
 }
 
 // Validate validates this add bucket lifecycle
