@@ -28,6 +28,7 @@ import {
 } from "../../Common/FormComponents/common/styleLibrary";
 import SelectWrapper from "../../Common/FormComponents/SelectWrapper/SelectWrapper";
 import InputBoxWrapper from "../../Common/FormComponents/InputBoxWrapper/InputBoxWrapper";
+import FileSelector from "../../Common/FormComponents/FileSelector/FileSelector";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -79,6 +80,7 @@ const AddTierConfiguration = ({
   const [secretKey, setSecretKey] = useState<string>("");
 
   const [creds, setCreds] = useState<string>("");
+  const [encodedCreds, setEncodedCreds] = useState<string>("");
 
   const [accountName, setAccountName] = useState<string>("");
   const [accountKey, setAccountKey] = useState<string>("");
@@ -114,7 +116,7 @@ const AddTierConfiguration = ({
           request = {
             gcs: {
               ...fields,
-              creds,
+              creds: encodedCreds,
             },
           };
           break;
@@ -149,7 +151,7 @@ const AddTierConfiguration = ({
     accountKey,
     accountName,
     bucket,
-    creds,
+    encodedCreds,
     endpoint,
     name,
     prefix,
@@ -186,9 +188,6 @@ const AddTierConfiguration = ({
     if (region === "") {
       valid = false;
     }
-    if (storageClass === "") {
-      valid = false;
-    }
 
     if (type === "s3") {
       if (accessKey === "") {
@@ -200,7 +199,7 @@ const AddTierConfiguration = ({
     }
 
     if (type === "gcs") {
-      if (creds === "") {
+      if (encodedCreds === "") {
         valid = false;
       }
     }
@@ -220,7 +219,7 @@ const AddTierConfiguration = ({
     accountKey,
     accountName,
     bucket,
-    creds,
+    encodedCreds,
     endpoint,
     isFormValid,
     name,
@@ -311,15 +310,16 @@ const AddTierConfiguration = ({
                 )}
                 {type === "gcs" && (
                   <Fragment>
-                    <InputBoxWrapper
+                    <FileSelector
+                      accept=".json"
                       id="creds"
+                      label="Credentials"
                       name="creds"
-                      label="Creds"
-                      placeholder="Enter Creds"
-                      value={creds}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setCreds(e.target.value);
+                      onChange={(encodedValue, fileName) => {
+                          setEncodedCreds(encodedValue)
+                          setCreds(fileName);
                       }}
+                      value={creds}
                     />
                   </Fragment>
                 )}
