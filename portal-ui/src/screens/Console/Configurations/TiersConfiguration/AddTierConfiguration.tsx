@@ -316,8 +316,8 @@ const AddTierConfiguration = ({
                       label="Credentials"
                       name="creds"
                       onChange={(encodedValue, fileName) => {
-                          setEncodedCreds(encodedValue)
-                          setCreds(fileName);
+                        setEncodedCreds(encodedValue);
+                        setCreds(fileName);
                       }}
                       value={creds}
                     />
