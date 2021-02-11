@@ -78,7 +78,7 @@ func getBucketLifecycle(ctx context.Context, client MinioClient, bucketName stri
 		rules = append(rules, &models.ObjectBucketLifecycle{
 			ID:         rule.ID,
 			Status:     rule.Status,
-			Prefix:     rule.Prefix,
+			Prefix:     rule.RuleFilter.And.Prefix,
 			Expiration: &models.ExpirationResponse{Date: rule.Expiration.Date.Format(time.RFC3339), Days: int64(rule.Expiration.Days), DeleteMarker: rule.Expiration.DeleteMarker.IsEnabled()},
 			Transition: &models.TransitionResponse{Date: rule.Transition.Date.Format(time.RFC3339), Days: int64(rule.Transition.Days), StorageClass: rule.Transition.StorageClass},
 			Tags:       tags,
