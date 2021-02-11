@@ -53,6 +53,7 @@ import EnableBucketEncryption from "./EnableBucketEncryption";
 import { connect } from "react-redux";
 import { setErrorSnackMessage } from "../../../../actions";
 import DeleteLifecycle from "./DeleteLifecycle";
+import AddLifecycleModal from "./AddLifecycleModal";
 
 const styles = (theme: Theme) =>
   createStyles({
@@ -417,6 +418,13 @@ const ViewBucket = ({
     setOpenSetReplication(open);
   };
 
+  const closeAddLCAndRefresh = (refresh: boolean) => {
+    setAddLifecycleOpen(false);
+    if(refresh) {
+      setLoadingLifecycle(true);
+    }
+  };
+
   const handleEncryptionCheckbox = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -555,6 +563,13 @@ const ViewBucket = ({
           selectedBucket={bucketName}
           lifecycle={selectedLifecycle}
           closeDeleteModalAndRefresh={closeDeleteLCAndRefresh}
+        />
+      )}
+      {addLifecycleOpen && (
+        <AddLifecycleModal
+        open={addLifecycleOpen}
+        bucketName={bucketName}
+        closeModalAndRefresh={closeAddLCAndRefresh}
         />
       )}
 
