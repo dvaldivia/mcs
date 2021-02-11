@@ -61,6 +61,7 @@ const AddLifecycleModal = ({
 }: IReplicationModal) => {
   const [addLoading, setAddLoading] = useState(false);
   const [prefix, setPrefix] = useState(bucketName);
+  const [tags, setTags] = useState<string>("");
   const [storageClass, setStorageClass] = useState("");
   const [NCTransitionSC, setNCTransitionSC] = useState("");
   const [expiredObjectDM, setExpiredObjectDM] = useState<boolean>(false);
@@ -87,13 +88,13 @@ const AddLifecycleModal = ({
         };
       } else {
         expiry = {
-          expiry_days: expiryDays,
+          expiry_days: parseInt(expiryDays),
         };
       }
 
       rules = {
         ...expiry,
-        noncurrentversion_expiration_days: NCExpirationDays,
+        noncurrentversion_expiration_days: parseInt(NCExpirationDays),
       };
     } else {
       let transition = {};
@@ -104,26 +105,27 @@ const AddLifecycleModal = ({
         };
       } else {
         transition = {
-          transition_days: transitionDays,
+          transition_days: parseInt(transitionDays),
         };
       }
 
       rules = {
         ...transition,
-        noncurrentversion_transition_days: NCTransitionDays,
+        noncurrentversion_transition_days: parseInt(NCTransitionDays),
         noncurrentversion_transition_storage_class: NCTransitionSC,
       };
     }
 
-    const remoteBucketInfo = {
+    const lifecycleInsert = {
       prefix,
+      tags,
       storage_class: storageClass,
       expired_object_delete_marker: expiredObjectDM,
       ...rules,
     };
 
     api
-      .invoke("POST", "/api/v1/remote-buckets", remoteBucketInfo)
+      .invoke("POST", `/api/v1/buckets/${bucketName}/lifecycle`, lifecycleInsert)
       .then(() => {
         setAddLoading(false);
         closeModalAndRefresh(true);
@@ -169,7 +171,7 @@ const AddLifecycleModal = ({
                 name="tags"
                 label="Tags"
                 elements={""}
-                onChange={(vl: any) => {console.log(vl);}}
+                onChange={(vl: string) => {setTags(vl)}}
                 keyPlaceholder="Tag Key"
                 valuePlaceholder="Tag Value"
                 withBorder
