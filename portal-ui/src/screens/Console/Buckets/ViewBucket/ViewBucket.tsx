@@ -321,7 +321,7 @@ const ViewBucket = ({
   }, [loadingEncryption, bucketName]);
 
   useEffect(() => {
-    if(loadingLifecycle) {
+    if (loadingLifecycle) {
       api
         .invoke("GET", `/api/v1/buckets/${bucketName}/lifecycle`)
         .then((res: any) => {
@@ -335,7 +335,7 @@ const ViewBucket = ({
           setLoadingLifecycle(false);
         });
     }
-  }, [loadingLifecycle, setLoadingLifecycle, bucketName])
+  }, [loadingLifecycle, setLoadingLifecycle, bucketName]);
 
   const loadAllBucketData = () => {
     setLoadingBucket(true);
@@ -425,36 +425,35 @@ const ViewBucket = ({
   const tableActions = [{ type: "delete", onClick: confirmDeleteEvent }];
   const lifecycleActions: any[] = [{ type: "delete", onClick: () => {} }];
 
-
   const expirationRender = (expiration: any) => {
-    if(expiration.days) {
-      return `${expiration.days} day${expiration.days > 1 ? 's' : ''}`
+    if (expiration.days) {
+      return `${expiration.days} day${expiration.days > 1 ? "s" : ""}`;
     }
 
-    if(expiration.date === "0001-01-01T00:00:00Z") {
-      return '';
+    if (expiration.date === "0001-01-01T00:00:00Z") {
+      return "";
     }
 
     return <reactMoment.default>{expiration.date}</reactMoment.default>;
   };
 
   const transitionRender = (transition: any) => {
-    if(transition.days) {
-      return `${transition.days} day${transition.days > 1 ? 's' : ''}`
+    if (transition.days) {
+      return `${transition.days} day${transition.days > 1 ? "s" : ""}`;
     }
 
-    if(transition.date === "0001-01-01T00:00:00Z") {
-      return '';
+    if (transition.date === "0001-01-01T00:00:00Z") {
+      return "";
     }
 
     return <reactMoment.default>{transition.date}</reactMoment.default>;
-  }
+  };
 
   const renderStorageClass = (objectST: any) => {
     const stClass = get(objectST, "transition.storage_class", "");
 
     return stClass;
-  }
+  };
 
   const lifecycleColumns = [
     { label: "ID", elementKey: "id" },
@@ -474,7 +473,7 @@ const ViewBucket = ({
     {
       label: "Transition",
       elementKey: "transition",
-      renderFunction: transitionRender
+      renderFunction: transitionRender,
     },
     {
       label: "Storage Class",
