@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useState } from "react";
-import get from "lodash/get";
 import { connect } from "react-redux";
 import {
   Button,
@@ -27,50 +26,41 @@ import {
   LinearProgress,
 } from "@material-ui/core";
 import api from "../../../../common/api";
-import { BucketEvent, BucketList } from "../types";
 import { setErrorSnackMessage } from "../../../../actions";
 
-interface IDeleteEventProps {
+interface IDeleteLifecycleProps {
   closeDeleteModalAndRefresh: (refresh: boolean) => void;
   deleteOpen: boolean;
   selectedBucket: string;
-  bucketEvent: BucketEvent | null;
+  lifecycle: string;
   setErrorSnackMessage: typeof setErrorSnackMessage;
 }
 
-const DeleteEvent = ({
+const DeleteLifecycle = ({
   closeDeleteModalAndRefresh,
   deleteOpen,
   selectedBucket,
-  bucketEvent,
+  lifecycle,
   setErrorSnackMessage,
-}: IDeleteEventProps) => {
+}: IDeleteLifecycleProps) => {
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   const removeRecord = () => {
     if (deleteLoading) {
       return;
     }
-    if (bucketEvent == null) {
+    if (!lifecycle) {
       return;
     }
 
     setDeleteLoading(true);
 
-    const events = get(bucketEvent, "events", []);
-    const prefix = get(bucketEvent, "prefix", "");
-    const suffix = get(bucketEvent, "suffix", "");
     api
       .invoke(
         "DELETE",
-        `/api/v1/buckets/${selectedBucket}/events/${bucketEvent.arn}`,
-        {
-          events,
-          prefix,
-          suffix,
-        }
+        `/api/v1/buckets/${selectedBucket}/lifecycle/${lifecycle}`
       )
-      .then((res: BucketList) => {
+      .then(() => {
         setDeleteLoading(false);
         closeDeleteModalAndRefresh(true);
       })
@@ -89,11 +79,11 @@ const DeleteEvent = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">Delete Event</DialogTitle>
+      <DialogTitle id="alert-dialog-title">Delete Lifecycle</DialogTitle>
       <DialogContent>
         {deleteLoading && <LinearProgress />}
         <DialogContentText id="alert-dialog-description">
-          Are you sure you want to delete this event?
+          Are you sure you want to delete the <strong>{lifecycle}</strong> lifecycle?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -124,4 +114,4 @@ const connector = connect(null, {
   setErrorSnackMessage,
 });
 
-export default connector(DeleteEvent);
+export default connector(DeleteLifecycle);
