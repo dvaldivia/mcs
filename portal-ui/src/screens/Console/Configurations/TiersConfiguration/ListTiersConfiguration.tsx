@@ -30,7 +30,7 @@ import {
 } from "../../Common/FormComponents/common/styleLibrary";
 import { CreateIcon } from "../../../../icons";
 import { setErrorSnackMessage } from "../../../../actions";
-import { ITearElement, ITearResponse } from "./types";
+import { ITierElement, ITierResponse } from "./types";
 import api from "../../../../common/api";
 import TableWrapper from "../../Common/TableWrapper/TableWrapper";
 import SlideOptions from "../../Common/SlideOptions/SlideOptions";
@@ -77,7 +77,7 @@ const ListTiersConfiguration = ({
   classes,
   setErrorSnackMessage,
 }: IListTiersConfig) => {
-  const [records, setRecords] = useState<ITearElement[]>([]);
+  const [records, setRecords] = useState<ITierElement[]>([]);
   const [filter, setFilter] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentPanel, setCurrentPanel] = useState<number>(0);
@@ -87,7 +87,7 @@ const ListTiersConfiguration = ({
       const fetchRecords = () => {
         api
           .invoke("GET", `/api/v1/admin/tiers`)
-          .then((res: ITearResponse) => {
+          .then((res: ITierResponse) => {
             setRecords(res.items || []);
             setIsLoading(false);
           })

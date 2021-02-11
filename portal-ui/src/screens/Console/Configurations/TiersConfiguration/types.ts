@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export interface ITearS3 {
+export interface ITierS3 {
   name: string;
   endpoint: string;
   accesskey: string;
@@ -25,7 +25,7 @@ export interface ITearS3 {
   storageclass: string;
 }
 
-export interface ITearGCS {
+export interface ITierGCS {
   name: string;
   endpoint: string;
   creds: string;
@@ -35,7 +35,7 @@ export interface ITearGCS {
   storageclass: string;
 }
 
-export interface ITearAzure {
+export interface ITierAzure {
   name: string;
   endpoint: string;
   accountname: string;
@@ -46,13 +46,13 @@ export interface ITearAzure {
   storageclass: string;
 }
 
-export interface ITearElement {
+export interface ITierElement {
   type: "s3" | "gcs" | "azure" | "unsupported";
-  s3: ITearS3;
-  gcs: ITearGCS;
-  azure: ITearAzure;
+  s3: ITierS3;
+  gcs: ITierGCS;
+  azure: ITierAzure;
 }
 
-export interface ITearResponse {
-  items: ITearElement[];
+export interface ITierResponse {
+  items: ITierElement[];
 }
