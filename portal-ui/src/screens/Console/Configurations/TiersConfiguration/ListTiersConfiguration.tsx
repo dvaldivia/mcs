@@ -112,8 +112,13 @@ const ListTiersConfiguration = ({
   };
 
   const addTier = () => {
-      setCurrentPanel(1);
-  }
+    setCurrentPanel(1);
+  };
+
+  const tierAdded = () => {
+    setCurrentPanel(0);
+    setIsLoading(true);
+  };
 
   return (
     <Fragment>
@@ -190,9 +195,7 @@ const ListTiersConfiguration = ({
                       </button>
                     </Grid>
                     <Grid item xs={12}>
-                        <AddTierConfiguration 
-                            saveAndRefresh={() => {}}
-                        />
+                      <AddTierConfiguration saveAndRefresh={tierAdded} />
                     </Grid>
                   </Fragment>,
                   <Fragment>
