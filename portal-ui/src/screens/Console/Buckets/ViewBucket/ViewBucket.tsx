@@ -671,7 +671,7 @@ const ViewBucket = ({
               >
                 <Tab label="Events" {...a11yProps(0)} />
                 <Tab label="Replication" {...a11yProps(1)} />
-                {isVersioned && <Tab label="Lifecycle" {...a11yProps(2)} />}
+                <Tab label="Lifecycle" {...a11yProps(2)} />
               </Tabs>
             </Grid>
             <Grid item xs={6} className={classes.actionsTray}>
@@ -763,7 +763,6 @@ const ViewBucket = ({
                 idField="id"
               />
             </TabPanel>
-            {isVersioned && (
               <TabPanel index={2} value={curTab}>
                 <TableWrapper
                   itemActions={lifecycleActions}
@@ -775,7 +774,6 @@ const ViewBucket = ({
                   idField="id"
                 />
               </TabPanel>
-            )}
           </Grid>
         </Grid>
       </Grid>
