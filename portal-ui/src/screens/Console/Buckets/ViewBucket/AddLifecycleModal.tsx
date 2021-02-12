@@ -73,7 +73,7 @@ const AddLifecycleModal = ({
   const [loadingTiers, setLoadingTiers] = useState<boolean>(true);
   const [tiersList, setTiersList] = useState<ITiersDropDown[]>([]);
   const [addLoading, setAddLoading] = useState(false);
-  const [prefix, setPrefix] = useState(bucketName);
+  const [prefix, setPrefix] = useState("");
   const [tags, setTags] = useState<string>("");
   const [storageClass, setStorageClass] = useState("");
   const [NCTransitionSC, setNCTransitionSC] = useState("");
@@ -120,10 +120,6 @@ const AddLifecycleModal = ({
   useEffect(() => {
     let valid = true;
 
-    if (prefix === "") {
-      valid = false;
-    }
-
     if (isExpiry) {
       if (expiryType && expiryDate === "") {
         valid = false;
@@ -145,7 +141,6 @@ const AddLifecycleModal = ({
     }
     setIsFormValid(valid);
   }, [
-    prefix,
     isExpiry,
     expiryType,
     expiryDate,
@@ -249,30 +244,6 @@ const AddLifecycleModal = ({
         >
           <Grid container>
             <Grid item xs={12} className={classes.formScrollable}>
-              <Grid item xs={12}>
-                <InputBoxWrapper
-                  id="prefix"
-                  name="prefix"
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setPrefix(e.target.value);
-                  }}
-                  label="Prefix"
-                  value={prefix}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <QueryMultiSelector
-                  name="tags"
-                  label="Tags"
-                  elements={""}
-                  onChange={(vl: string) => {
-                    setTags(vl);
-                  }}
-                  keyPlaceholder="Tag Key"
-                  valuePlaceholder="Tag Value"
-                  withBorder
-                />
-              </Grid>
               <Grid item xs={12}>
                 <FormSwitchWrapper
                   value="isExpiry"
@@ -427,6 +398,30 @@ const AddLifecycleModal = ({
                   </Grid>
                 </Fragment>
               )}
+              <Grid item xs={12}>
+                <InputBoxWrapper
+                  id="prefix"
+                  name="prefix"
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setPrefix(e.target.value);
+                  }}
+                  label="Prefix"
+                  value={prefix}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <QueryMultiSelector
+                  name="tags"
+                  label="Tags"
+                  elements={""}
+                  onChange={(vl: string) => {
+                    setTags(vl);
+                  }}
+                  keyPlaceholder="Tag Key"
+                  valuePlaceholder="Tag Value"
+                  withBorder
+                />
+              </Grid>
               <Grid item xs={12}>
                 <FormSwitchWrapper
                   value="expired_delete_marker"
