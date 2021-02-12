@@ -235,7 +235,7 @@ const ListTiersConfiguration = ({
                       <Grid item xs={12}>
                         <TableWrapper
                           itemActions={[
-                            {type: "view", onClick: (tierData: ITierElement) => {
+                            {type: "edit", onClick: (tierData: ITierElement) => {
                               setSelectedTier(tierData);
                               setUpdateCredentialsOpen(true);
                             }},
