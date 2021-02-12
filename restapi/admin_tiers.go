@@ -18,7 +18,6 @@ package restapi
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/minio/minio/pkg/madmin"
@@ -38,7 +37,7 @@ func registerAdminTiersHandlers(api *operations.ConsoleAPI) {
 		}
 		return admin_api.NewTiersListOK().WithPayload(tierList)
 	})
-	// add a new notification endpoints
+	// add a new tiers
 	api.AdminAPIAddTierHandler = admin_api.AddTierHandlerFunc(func(params admin_api.AddTierParams, session *models.Principal) middleware.Responder {
 		notifEndpoints, err := getAddTierResponse(session, &params)
 		if err != nil {
@@ -46,7 +45,7 @@ func registerAdminTiersHandlers(api *operations.ConsoleAPI) {
 		}
 		return admin_api.NewAddTierCreated().WithPayload(notifEndpoints)
 	})
-	// add a new notification endpoints
+	// get a tier
 	api.AdminAPIGetTierHandler = admin_api.GetTierHandlerFunc(func(params admin_api.GetTierParams, session *models.Principal) middleware.Responder {
 		notifEndpoints, err := getGetTierResponse(session, &params)
 		if err != nil {
@@ -130,7 +129,7 @@ func getTiers(ctx context.Context, client MinioAdmin) (*models.TierListResponse,
 	}, nil
 }
 
-// getNotificationEndpointsResponse returns a list of notification endpoints in the instance
+// getTiersResponse returns a response with a list of tiers
 func getTiersResponse(session *models.Principal) (*models.TierListResponse, *models.Error) {
 	mAdmin, err := newMAdminClient(session)
 	if err != nil {
@@ -210,7 +209,7 @@ func addTier(ctx context.Context, client MinioAdmin, params *admin_api.AddTierPa
 	return params.Body, nil
 }
 
-// getNotificationEndpointsResponse returns a list of notification endpoints in the instance
+// getAddTierResponse returns the response of admin tier
 func getAddTierResponse(session *models.Principal, params *admin_api.AddTierParams) (*models.Tier, *models.Error) {
 	mAdmin, err := newMAdminClient(session)
 	if err != nil {
@@ -225,7 +224,6 @@ func getAddTierResponse(session *models.Principal, params *admin_api.AddTierPara
 	// serialize output
 	addTierResp, err := addTier(ctx, adminClient, params)
 	if err != nil {
-		log.Println("error here")
 		return nil, prepareError(err)
 	}
 	return addTierResp, nil
@@ -311,7 +309,6 @@ func getGetTierResponse(session *models.Principal, params *admin_api.GetTierPara
 	// serialize output
 	addTierResp, err := getTier(ctx, adminClient, params)
 	if err != nil {
-		log.Println("error here")
 		return nil, prepareError(err)
 	}
 	return addTierResp, nil
@@ -323,14 +320,10 @@ func editTierCredentials(ctx context.Context, client MinioAdmin, params *admin_a
 		SecretKey: params.Body.SecretKey,
 		CredsJSON: []byte(params.Body.Creds),
 	}
-	err := client.editTierCreds(ctx, params.Name, creds)
-	if err != nil {
-		return err
-	}
-	return nil
+	return client.editTierCreds(ctx, params.Name, creds)
 }
 
-// getNotificationEndpointsResponse returns a list of notification endpoints in the instance
+// getEditTierCredentialsResponse returns the result of editing credentials for a tier
 func getEditTierCredentialsResponse(session *models.Principal, params *admin_api.EditTierCredentialsParams) *models.Error {
 	mAdmin, err := newMAdminClient(session)
 	if err != nil {
@@ -345,7 +338,6 @@ func getEditTierCredentialsResponse(session *models.Principal, params *admin_api
 	// serialize output
 	err = editTierCredentials(ctx, adminClient, params)
 	if err != nil {
-		log.Println("error here")
 		return prepareError(err)
 	}
 	return nil

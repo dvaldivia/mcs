@@ -105,11 +105,7 @@ const UpdateTierCredentialsModal = ({
     }
     if (name !== "") {
       api
-        .invoke(
-          "PUT",
-          `/api/v1/admin/tiers/${type}/${name}/credentials`,
-          rules
-        )
+        .invoke("PUT", `/api/v1/admin/tiers/${type}/${name}/credentials`, rules)
         .then(() => {
           setSavingTiers(false);
           closeModalAndRefresh(true);
@@ -119,7 +115,9 @@ const UpdateTierCredentialsModal = ({
           setModalErrorSnackMessage(err);
         });
     } else {
-      setModalErrorSnackMessage("There was an error retrieving tier information");
+      setModalErrorSnackMessage(
+        "There was an error retrieving tier information"
+      );
     }
   };
 

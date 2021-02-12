@@ -18,7 +18,6 @@ package restapi
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -153,7 +152,7 @@ func addBucketLifecycle(ctx context.Context, client MinioClient, params user_api
 	return nil
 }
 
-// getListBucketsResponse performs getBucketLifecycle() and serializes it to the handler's output
+// getAddBucketLifecycleResponse returns the respose of adding a bucket lifecycle response
 func getAddBucketLifecycleResponse(session *models.Principal, params user_api.AddBucketLifecycleParams) *models.Error {
 	ctx := context.Background()
 	mClient, err := newMinioClient(session)
@@ -164,12 +163,8 @@ func getAddBucketLifecycleResponse(session *models.Principal, params user_api.Ad
 	// defining the client to be used
 	minioClient := minioClient{client: mClient}
 
-	fmt.Println(params.BucketName)
-	fmt.Println(minioClient.listBucketsWithContext(ctx))
-
 	err = addBucketLifecycle(ctx, minioClient, params)
 	if err != nil {
-		fmt.Println("zxczxc")
 		return prepareError(err)
 	}
 

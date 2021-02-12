@@ -83,8 +83,12 @@ const ListTiersConfiguration = ({
   const [filter, setFilter] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentPanel, setCurrentPanel] = useState<number>(0);
-  const [updateCredentialsOpen, setUpdateCredentialsOpen] = useState<boolean>(false);
-  const [selectedTier, setSelectedTier] = useState<ITierElement>({type: "unsupported"});
+  const [updateCredentialsOpen, setUpdateCredentialsOpen] = useState<boolean>(
+    false
+  );
+  const [selectedTier, setSelectedTier] = useState<ITierElement>({
+    type: "unsupported",
+  });
 
   useEffect(() => {
     if (isLoading) {
@@ -185,9 +189,9 @@ const ListTiersConfiguration = ({
     <Fragment>
       {updateCredentialsOpen && (
         <UpdateTierCredentiasModal
-        open={updateCredentialsOpen}
-        tierData={selectedTier}
-        closeModalAndRefresh={closeTierCredentials}
+          open={updateCredentialsOpen}
+          tierData={selectedTier}
+          closeModalAndRefresh={closeTierCredentials}
         />
       )}
       <Grid container>
@@ -235,10 +239,13 @@ const ListTiersConfiguration = ({
                       <Grid item xs={12}>
                         <TableWrapper
                           itemActions={[
-                            {type: "edit", onClick: (tierData: ITierElement) => {
-                              setSelectedTier(tierData);
-                              setUpdateCredentialsOpen(true);
-                            }},
+                            {
+                              type: "edit",
+                              onClick: (tierData: ITierElement) => {
+                                setSelectedTier(tierData);
+                                setUpdateCredentialsOpen(true);
+                              },
+                            },
                           ]}
                           columns={[
                             {

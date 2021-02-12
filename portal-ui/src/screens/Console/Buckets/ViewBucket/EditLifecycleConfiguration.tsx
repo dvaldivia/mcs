@@ -64,18 +64,22 @@ const EditLifecycleConfiguration = ({
   const [enabled, setEnabled] = useState<boolean>(false);
 
   useEffect(() => {
-    if(lifecycle.status === "Enabled") {
+    if (lifecycle.status === "Enabled") {
       setEnabled(true);
     }
 
-    if(lifecycle.tags) {
-      const tgs = lifecycle.tags.reduce((stringLab: string, currItem: any, index: number) => {
-        return `${stringLab}${index !== 0 ? '&' : ''}${currItem.key}=${currItem.value}`;
-      }, "");
+    if (lifecycle.tags) {
+      const tgs = lifecycle.tags.reduce(
+        (stringLab: string, currItem: any, index: number) => {
+          return `${stringLab}${index !== 0 ? "&" : ""}${currItem.key}=${
+            currItem.value
+          }`;
+        },
+        ""
+      );
 
       setTags(tgs);
     }
-
   }, [lifecycle]);
 
   const saveRecord = (event: React.FormEvent) => {
@@ -87,10 +91,14 @@ const EditLifecycleConfiguration = ({
     setAddLoading(true);
     if (selectedBucket !== null && lifecycle !== null) {
       api
-        .invoke("PUT", `/api/v1/buckets/${selectedBucket}/lifecycle/${lifecycle.id}`, {
-          disable: !enabled,
-          tags: tags,
-        })
+        .invoke(
+          "PUT",
+          `/api/v1/buckets/${selectedBucket}/lifecycle/${lifecycle.id}`,
+          {
+            disable: !enabled,
+            tags: tags,
+          }
+        )
         .then((res) => {
           setAddLoading(false);
           closeModalAndRefresh(true);
@@ -110,19 +118,19 @@ const EditLifecycleConfiguration = ({
       modalOpen={open}
       title={"Edit Lifecycle Configuration"}
     >
-        <div className={classes.floatingEnabled}>
-          <FormSwitchWrapper
-            indicatorLabels={["Enabled", "Disabled"]}
-            checked={enabled}
-            value={"user_enabled"}
-            id="user-status"
-            name="user-status"
-            onChange={(e) => {
-              setEnabled(e.target.checked);
-            }}
-            switchOnly
-          />
-        </div>
+      <div className={classes.floatingEnabled}>
+        <FormSwitchWrapper
+          indicatorLabels={["Enabled", "Disabled"]}
+          checked={enabled}
+          value={"user_enabled"}
+          id="user-status"
+          name="user-status"
+          onChange={(e) => {
+            setEnabled(e.target.checked);
+          }}
+          switchOnly
+        />
+      </div>
 
       <React.Fragment>
         <form
@@ -134,17 +142,17 @@ const EditLifecycleConfiguration = ({
         >
           <Grid container>
             <Grid item xs={12} className={classes.formScrollable}>
-            <Grid item xs={12}>
-            <InputBoxWrapper
-                id="id"
-                name="id"
-                label="Id"
-                value={lifecycle.id}
-                onChange={() => {}}
-                disabled
-              />
+              <Grid item xs={12}>
+                <InputBoxWrapper
+                  id="id"
+                  name="id"
+                  label="Id"
+                  value={lifecycle.id}
+                  onChange={() => {}}
+                  disabled
+                />
               </Grid>
-            <Grid item xs={12}>
+              <Grid item xs={12}>
                 <QueryMultiSelector
                   name="tags"
                   label="Tags"

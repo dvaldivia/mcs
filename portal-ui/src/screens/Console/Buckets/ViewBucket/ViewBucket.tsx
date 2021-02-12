@@ -219,7 +219,9 @@ const ViewBucket = ({
   const [loadingLifecycle, setLoadingLifecycle] = useState<boolean>(true);
   const [lifecycleRecords, setLifecycleRecords] = useState<LifeCycleItem[]>([]);
   const [addLifecycleOpen, setAddLifecycleOpen] = useState<boolean>(false);
-  const [selectedLifecycle, setSelectedLifecycle] = useState<LifeCycleItem>({id: ""});
+  const [selectedLifecycle, setSelectedLifecycle] = useState<LifeCycleItem>({
+    id: "",
+  });
 
   const bucketName = match.params["bucketName"];
 
