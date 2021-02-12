@@ -244,6 +244,7 @@ const AddLifecycleModal = ({
         >
           <Grid container>
             <Grid item xs={12} className={classes.formScrollable}>
+              <h3>Lifecycle Configuration</h3>
               <Grid item xs={12}>
                 <FormSwitchWrapper
                   value="isExpiry"
@@ -398,6 +399,7 @@ const AddLifecycleModal = ({
                   </Grid>
                 </Fragment>
               )}
+              <h3>File Configuration</h3>
               <Grid item xs={12}>
                 <InputBoxWrapper
                   id="prefix"
