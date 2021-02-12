@@ -345,7 +345,7 @@ const Login = ({ classes, userLoggedIn }: ILoginProps) => {
             color="primary"
             className={classes.submit}
           >
-            Go to SSO Page
+            Login with SSO
           </Button>
         </React.Fragment>
       );
