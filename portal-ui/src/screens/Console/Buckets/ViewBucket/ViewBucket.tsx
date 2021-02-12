@@ -52,7 +52,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import EnableBucketEncryption from "./EnableBucketEncryption";
 import { connect } from "react-redux";
 import { setErrorSnackMessage } from "../../../../actions";
-import DeleteLifecycle from "./DeleteLifecycle";
+import EditLifecycleConfiguration from "./EditLifecycleConfiguration";
 import AddLifecycleModal from "./AddLifecycleModal";
 
 const styles = (theme: Theme) =>
@@ -207,9 +207,7 @@ const ViewBucket = ({
     setEnableEncryptionScreenOpen,
   ] = useState<boolean>(false);
   const [deleteOpen, setDeleteOpen] = useState<boolean>(false);
-  const [deleteLifecycleOpen, setDeleteLifecycleOpen] = useState<boolean>(
-    false
-  );
+  const [editLifecycleOpen, setEditLifecycleOpen] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<BucketEvent | null>(null);
   const [bucketSize, setBucketSize] = useState<string>("0");
   const [openSetReplication, setOpenSetReplication] = useState<boolean>(false);
@@ -221,7 +219,7 @@ const ViewBucket = ({
   const [loadingLifecycle, setLoadingLifecycle] = useState<boolean>(true);
   const [lifecycleRecords, setLifecycleRecords] = useState<LifeCycleItem[]>([]);
   const [addLifecycleOpen, setAddLifecycleOpen] = useState<boolean>(false);
-  const [selectedLifecycle, setSelectedLifecycle] = useState<string>("");
+  const [selectedLifecycle, setSelectedLifecycle] = useState<LifeCycleItem>({id: ""});
 
   const bucketName = match.params["bucketName"];
 
@@ -384,8 +382,8 @@ const ViewBucket = ({
     }
   };
 
-  const closeDeleteLCAndRefresh = (refresh: boolean) => {
-    setDeleteLifecycleOpen(false);
+  const closeEditLCAndRefresh = (refresh: boolean) => {
+    setEditLifecycleOpen(false);
     if (refresh) {
       setLoadingLifecycle(true);
     }
@@ -420,7 +418,7 @@ const ViewBucket = ({
 
   const closeAddLCAndRefresh = (refresh: boolean) => {
     setAddLifecycleOpen(false);
-    if(refresh) {
+    if (refresh) {
       setLoadingLifecycle(true);
     }
   };
@@ -445,10 +443,10 @@ const ViewBucket = ({
   const tableActions = [{ type: "delete", onClick: confirmDeleteEvent }];
   const lifecycleActions: any[] = [
     {
-      type: "disable",
-      onClick: (item: any) => {
-        setSelectedLifecycle(item.id || "");
-        setDeleteLifecycleOpen(true);
+      type: "edit",
+      onClick: (item: LifeCycleItem) => {
+        setSelectedLifecycle(item);
+        setEditLifecycleOpen(true);
       },
     },
   ];
@@ -557,19 +555,19 @@ const ViewBucket = ({
           closeDeleteModalAndRefresh={closeDeleteModalAndRefresh}
         />
       )}
-      {deleteLifecycleOpen && (
-        <DeleteLifecycle
-          deleteOpen={deleteLifecycleOpen}
+      {editLifecycleOpen && (
+        <EditLifecycleConfiguration
+          open={editLifecycleOpen}
+          closeModalAndRefresh={closeEditLCAndRefresh}
           selectedBucket={bucketName}
           lifecycle={selectedLifecycle}
-          closeDeleteModalAndRefresh={closeDeleteLCAndRefresh}
         />
       )}
       {addLifecycleOpen && (
         <AddLifecycleModal
-        open={addLifecycleOpen}
-        bucketName={bucketName}
-        closeModalAndRefresh={closeAddLCAndRefresh}
+          open={addLifecycleOpen}
+          bucketName={bucketName}
+          closeModalAndRefresh={closeAddLCAndRefresh}
         />
       )}
 
@@ -763,17 +761,17 @@ const ViewBucket = ({
                 idField="id"
               />
             </TabPanel>
-              <TabPanel index={2} value={curTab}>
-                <TableWrapper
-                  itemActions={lifecycleActions}
-                  columns={lifecycleColumns}
-                  isLoading={loadingLifecycle}
-                  records={lifecycleRecords}
-                  entityName="Lifecycle"
-                  customEmptyMessage="There are no Lifecycle rules yet"
-                  idField="id"
-                />
-              </TabPanel>
+            <TabPanel index={2} value={curTab}>
+              <TableWrapper
+                itemActions={lifecycleActions}
+                columns={lifecycleColumns}
+                isLoading={loadingLifecycle}
+                records={lifecycleRecords}
+                entityName="Lifecycle"
+                customEmptyMessage="There are no Lifecycle rules yet"
+                idField="id"
+              />
+            </TabPanel>
           </Grid>
         </Grid>
       </Grid>
