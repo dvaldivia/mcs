@@ -30,28 +30,28 @@ import (
 	"github.com/minio/console/models"
 )
 
-// UpdateBucketLifecycleNoContentCode is the HTTP code returned for type UpdateBucketLifecycleNoContent
-const UpdateBucketLifecycleNoContentCode int = 204
+// UpdateBucketLifecycleOKCode is the HTTP code returned for type UpdateBucketLifecycleOK
+const UpdateBucketLifecycleOKCode int = 200
 
-/*UpdateBucketLifecycleNoContent A successful response.
+/*UpdateBucketLifecycleOK A successful response.
 
-swagger:response updateBucketLifecycleNoContent
+swagger:response updateBucketLifecycleOK
 */
-type UpdateBucketLifecycleNoContent struct {
+type UpdateBucketLifecycleOK struct {
 }
 
-// NewUpdateBucketLifecycleNoContent creates UpdateBucketLifecycleNoContent with default headers values
-func NewUpdateBucketLifecycleNoContent() *UpdateBucketLifecycleNoContent {
+// NewUpdateBucketLifecycleOK creates UpdateBucketLifecycleOK with default headers values
+func NewUpdateBucketLifecycleOK() *UpdateBucketLifecycleOK {
 
-	return &UpdateBucketLifecycleNoContent{}
+	return &UpdateBucketLifecycleOK{}
 }
 
 // WriteResponse to the client
-func (o *UpdateBucketLifecycleNoContent) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+func (o *UpdateBucketLifecycleOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
 	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
 
-	rw.WriteHeader(204)
+	rw.WriteHeader(200)
 }
 
 /*UpdateBucketLifecycleDefault Generic error response.

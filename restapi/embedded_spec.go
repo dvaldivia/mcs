@@ -725,7 +725,7 @@ func init() {
           }
         ],
         "responses": {
-          "204": {
+          "200": {
             "description": "A successful response."
           },
           "default": {
@@ -6764,7 +6764,7 @@ func init() {
           }
         ],
         "responses": {
-          "204": {
+          "200": {
             "description": "A successful response."
           },
           "default": {
