@@ -230,6 +230,20 @@ const AddTierConfiguration = ({
     type,
   ]);
 
+  useEffect(() => {
+    switch (type) {
+      case "gcs":
+        setEndpoint("https://storage.googleapis.com/");
+        break;
+      case "s3":
+        setEndpoint("https://s3.amazonaws.com");
+        break;
+      case "azure":
+        setEndpoint("http://blob.core.windows.net");
+        break;
+    }
+  }, [type]);
+
   //Fetch Actions
   const submitForm = (event: React.FormEvent) => {
     event.preventDefault();
