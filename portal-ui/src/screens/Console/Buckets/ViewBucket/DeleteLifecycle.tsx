@@ -104,7 +104,7 @@ const DeleteLifecycle = ({
           color="secondary"
           autoFocus
         >
-          Delete
+          Disable
         </Button>
       </DialogActions>
     </Dialog>
