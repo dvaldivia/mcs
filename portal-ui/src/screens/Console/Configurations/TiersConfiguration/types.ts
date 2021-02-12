@@ -48,11 +48,17 @@ export interface ITierAzure {
 
 export interface ITierElement {
   type: "s3" | "gcs" | "azure" | "unsupported";
-  s3: ITierS3;
-  gcs: ITierGCS;
-  azure: ITierAzure;
+  s3?: ITierS3;
+  gcs?: ITierGCS;
+  azure?: ITierAzure;
 }
 
 export interface ITierResponse {
   items: ITierElement[];
+}
+
+export interface ITierUpdateCreds {
+  access_key: string;
+  secret_key: string;
+  creds: string;
 }

@@ -14,14 +14,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import React, { Fragment, useCallback, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import Grid from "@material-ui/core/Grid";
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { Button } from "@material-ui/core";
 import api from "../../../../common/api";
-import { serverNeedsRestart, setErrorSnackMessage } from "../../../../actions";
-import { IElementValue } from "../types";
+import { setErrorSnackMessage } from "../../../../actions";
 import {
   modalBasic,
   settingsCommon,

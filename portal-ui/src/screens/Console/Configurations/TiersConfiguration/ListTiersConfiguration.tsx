@@ -37,6 +37,7 @@ import TableWrapper from "../../Common/TableWrapper/TableWrapper";
 import SlideOptions from "../../Common/SlideOptions/SlideOptions";
 import BackSettingsIcon from "../../../../icons/BackSettingsIcon";
 import AddTierConfiguration from "./AddTierConfiguration";
+import UpdateTierCredentiasModal from "./UpdateTierCredentiasModal";
 
 interface IListTiersConfig {
   classes: any;
@@ -82,6 +83,8 @@ const ListTiersConfiguration = ({
   const [filter, setFilter] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentPanel, setCurrentPanel] = useState<number>(0);
+  const [updateCredentialsOpen, setUpdateCredentialsOpen] = useState<boolean>(false);
+  const [selectedTier, setSelectedTier] = useState<ITierElement>({type: "unsupported"});
 
   useEffect(() => {
     if (isLoading) {
@@ -174,8 +177,19 @@ const ListTiersConfiguration = ({
     return "";
   };
 
+  const closeTierCredentials = () => {
+    setUpdateCredentialsOpen(false);
+  };
+
   return (
     <Fragment>
+      {updateCredentialsOpen && (
+        <UpdateTierCredentiasModal
+        open={updateCredentialsOpen}
+        tierData={selectedTier}
+        closeModalAndRefresh={closeTierCredentials}
+        />
+      )}
       <Grid container>
         <Grid item xs={12}>
           <Grid item xs={12}>
@@ -221,10 +235,10 @@ const ListTiersConfiguration = ({
                       <Grid item xs={12}>
                         <TableWrapper
                           itemActions={[
-                            {
-                              type: "disable",
-                              onClick: (item: any) => {},
-                            },
+                            {type: "view", onClick: (tierData: ITierElement) => {
+                              setSelectedTier(tierData);
+                              setUpdateCredentialsOpen(true);
+                            }},
                           ]}
                           columns={[
                             {
