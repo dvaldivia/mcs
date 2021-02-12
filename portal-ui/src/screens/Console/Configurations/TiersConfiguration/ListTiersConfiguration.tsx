@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useEffect, useState, Fragment } from "react";
-import get from 'lodash/get';
+import get from "lodash/get";
 import { connect } from "react-redux";
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { TextField } from "@material-ui/core";
@@ -127,7 +127,7 @@ const ListTiersConfiguration = ({
   const renderTierName = (item: ITierElement) => {
     const name = get(item, `${item.type}.name`, "");
 
-    if(name !== null) {
+    if (name !== null) {
       return name;
     }
 
@@ -137,7 +137,7 @@ const ListTiersConfiguration = ({
   const renderTierPrefix = (item: ITierElement) => {
     const prefix = get(item, `${item.type}.prefix`, "");
 
-    if(prefix !== null) {
+    if (prefix !== null) {
       return prefix;
     }
 
@@ -147,7 +147,7 @@ const ListTiersConfiguration = ({
   const renderTierEndpoint = (item: ITierElement) => {
     const endpoint = get(item, `${item.type}.endpoint`, "");
 
-    if(endpoint !== null) {
+    if (endpoint !== null) {
       return endpoint;
     }
 
@@ -157,7 +157,7 @@ const ListTiersConfiguration = ({
   const renderTierBucket = (item: ITierElement) => {
     const bucket = get(item, `${item.type}.bucket`, "");
 
-    if(bucket !== null) {
+    if (bucket !== null) {
       return bucket;
     }
 
@@ -167,7 +167,7 @@ const ListTiersConfiguration = ({
   const renderTierRegion = (item: ITierElement) => {
     const region = get(item, `${item.type}.region`, "");
 
-    if(region !== null) {
+    if (region !== null) {
       return region;
     }
 
@@ -220,7 +220,12 @@ const ListTiersConfiguration = ({
                       </Grid>
                       <Grid item xs={12}>
                         <TableWrapper
-                          itemActions={[]}
+                          itemActions={[
+                            {
+                              type: "disable",
+                              onClick: (item: any) => {},
+                            },
+                          ]}
                           columns={[
                             {
                               label: "Tier Name",

@@ -79,11 +79,11 @@ const DeleteLifecycle = ({
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
-      <DialogTitle id="alert-dialog-title">Delete Lifecycle</DialogTitle>
+      <DialogTitle id="alert-dialog-title">Disable Lifecycle</DialogTitle>
       <DialogContent>
         {deleteLoading && <LinearProgress />}
         <DialogContentText id="alert-dialog-description">
-          Are you sure you want to delete the <strong>{lifecycle}</strong>{" "}
+          Are you sure you want to disable the <strong>{lifecycle}</strong>{" "}
           lifecycle?
         </DialogContentText>
       </DialogContent>

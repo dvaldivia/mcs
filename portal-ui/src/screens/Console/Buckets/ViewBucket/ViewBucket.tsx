@@ -445,7 +445,7 @@ const ViewBucket = ({
   const tableActions = [{ type: "delete", onClick: confirmDeleteEvent }];
   const lifecycleActions: any[] = [
     {
-      type: "delete",
+      type: "disable",
       onClick: (item: any) => {
         setSelectedLifecycle(item.id || "");
         setDeleteLifecycleOpen(true);
