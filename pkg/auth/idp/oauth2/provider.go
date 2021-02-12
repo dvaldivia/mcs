@@ -108,6 +108,10 @@ func NewOauth2ProviderClient(ctx context.Context, scopes []string) (*Provider, e
 	if err != nil {
 		return nil, err
 	}
+	// if google, change scopes
+	if GetIdpURL() == "https://accounts.google.com" {
+		scopes = []string{oidc.ScopeOpenID}
+	}
 	// If provided scopes are empty we use a default list
 	if len(scopes) == 0 {
 		scopes = []string{oidc.ScopeOpenID, "profile", "app_metadata", "user_metadata", "email"}
