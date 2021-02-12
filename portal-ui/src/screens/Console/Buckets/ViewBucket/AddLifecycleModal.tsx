@@ -87,6 +87,7 @@ const AddLifecycleModal = ({
   const [transitionDays, setTransitionDays] = useState<string>("0");
   const [transitionDate, setTransitionDate] = useState<string>("");
   const [transitionType, setTransitionType] = useState<boolean>(false); // true: date, false: days
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
 
   useEffect(() => {
     if (loadingTiers) {
@@ -115,6 +116,45 @@ const AddLifecycleModal = ({
         });
     }
   }, [loadingTiers]);
+
+  useEffect(() => {
+    let valid = true;
+
+    if (prefix === "") {
+      valid = false;
+    }
+
+    if (isExpiry) {
+      if (expiryType && expiryDate === "") {
+        valid = false;
+      }
+      if (!expiryType && parseInt(expiryDays) < 1) {
+        valid = false;
+      }
+    } else {
+      if (transitionType && transitionDate === "") {
+        valid = false;
+      }
+      if (!transitionType && parseInt(transitionDays) < 1) {
+        valid = false;
+      }
+
+      if (storageClass === "") {
+        valid = false;
+      }
+    }
+    setIsFormValid(valid);
+  }, [
+    prefix,
+    isExpiry,
+    expiryType,
+    expiryDate,
+    expiryDays,
+    transitionType,
+    transitionDate,
+    transitionDays,
+    storageClass,
+  ]);
 
   const addRecord = () => {
     let rules = {};
@@ -406,7 +446,7 @@ const AddLifecycleModal = ({
                 type="submit"
                 variant="contained"
                 color="primary"
-                disabled={addLoading}
+                disabled={addLoading || !isFormValid}
               >
                 Save
               </Button>
