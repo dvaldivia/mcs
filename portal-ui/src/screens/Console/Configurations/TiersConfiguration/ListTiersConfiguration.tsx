@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import React, { useEffect, useState, Fragment } from "react";
+import get from 'lodash/get';
 import { connect } from "react-redux";
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import { TextField } from "@material-ui/core";
@@ -100,11 +101,14 @@ const ListTiersConfiguration = ({
     }
   }, [isLoading, setErrorSnackMessage]);
 
-  const filteredRecords = records.filter((b: any) => {
+  const filteredRecords = records.filter((b: ITierElement) => {
     if (filter === "") {
       return true;
     }
-    return b.service_name.indexOf(filter) >= 0;
+    const getItemName = get(b, `${b.type}.name`, "");
+    const getItemType = get(b, `type`, "");
+
+    return getItemName.indexOf(filter) >= 0 || getItemType.indexOf(filter) >= 0;
   });
 
   const backClick = () => {
