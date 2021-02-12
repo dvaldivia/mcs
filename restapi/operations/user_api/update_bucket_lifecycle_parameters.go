@@ -34,18 +34,18 @@ import (
 	"github.com/minio/console/models"
 )
 
-// NewDeleteBucketLifecycleParams creates a new DeleteBucketLifecycleParams object
+// NewUpdateBucketLifecycleParams creates a new UpdateBucketLifecycleParams object
 // no default values defined in spec.
-func NewDeleteBucketLifecycleParams() DeleteBucketLifecycleParams {
+func NewUpdateBucketLifecycleParams() UpdateBucketLifecycleParams {
 
-	return DeleteBucketLifecycleParams{}
+	return UpdateBucketLifecycleParams{}
 }
 
-// DeleteBucketLifecycleParams contains all the bound params for the delete bucket lifecycle operation
+// UpdateBucketLifecycleParams contains all the bound params for the update bucket lifecycle operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters DeleteBucketLifecycle
-type DeleteBucketLifecycleParams struct {
+// swagger:parameters UpdateBucketLifecycle
+type UpdateBucketLifecycleParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
@@ -70,8 +70,8 @@ type DeleteBucketLifecycleParams struct {
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls.
 //
-// To ensure default values, the struct must have been initialized with NewDeleteBucketLifecycleParams() beforehand.
-func (o *DeleteBucketLifecycleParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+// To ensure default values, the struct must have been initialized with NewUpdateBucketLifecycleParams() beforehand.
+func (o *UpdateBucketLifecycleParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 
 	o.HTTPRequest = r
@@ -115,7 +115,7 @@ func (o *DeleteBucketLifecycleParams) BindRequest(r *http.Request, route *middle
 }
 
 // bindBucketName binds and validates parameter BucketName from path.
-func (o *DeleteBucketLifecycleParams) bindBucketName(rawData []string, hasKey bool, formats strfmt.Registry) error {
+func (o *UpdateBucketLifecycleParams) bindBucketName(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]
@@ -130,7 +130,7 @@ func (o *DeleteBucketLifecycleParams) bindBucketName(rawData []string, hasKey bo
 }
 
 // bindLifecycleID binds and validates parameter LifecycleID from path.
-func (o *DeleteBucketLifecycleParams) bindLifecycleID(rawData []string, hasKey bool, formats strfmt.Registry) error {
+func (o *UpdateBucketLifecycleParams) bindLifecycleID(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
 	if len(rawData) > 0 {
 		raw = rawData[len(rawData)-1]

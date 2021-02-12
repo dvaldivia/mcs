@@ -124,9 +124,6 @@ func NewConsoleAPI(spec *loads.Document) *ConsoleAPI {
 		UserAPIDeleteBucketEventHandler: user_api.DeleteBucketEventHandlerFunc(func(params user_api.DeleteBucketEventParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation user_api.DeleteBucketEvent has not yet been implemented")
 		}),
-		UserAPIDeleteBucketLifecycleHandler: user_api.DeleteBucketLifecycleHandlerFunc(func(params user_api.DeleteBucketLifecycleParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation user_api.DeleteBucketLifecycle has not yet been implemented")
-		}),
 		UserAPIDeleteObjectHandler: user_api.DeleteObjectHandlerFunc(func(params user_api.DeleteObjectParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation user_api.DeleteObject has not yet been implemented")
 		}),
@@ -337,6 +334,9 @@ func NewConsoleAPI(spec *loads.Document) *ConsoleAPI {
 		AdminAPITiersListHandler: admin_api.TiersListHandlerFunc(func(params admin_api.TiersListParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation admin_api.TiersList has not yet been implemented")
 		}),
+		UserAPIUpdateBucketLifecycleHandler: user_api.UpdateBucketLifecycleHandlerFunc(func(params user_api.UpdateBucketLifecycleParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation user_api.UpdateBucketLifecycle has not yet been implemented")
+		}),
 		AdminAPIUpdateGroupHandler: admin_api.UpdateGroupHandlerFunc(func(params admin_api.UpdateGroupParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation admin_api.UpdateGroup has not yet been implemented")
 		}),
@@ -441,8 +441,6 @@ type ConsoleAPI struct {
 	UserAPIDeleteBucketHandler user_api.DeleteBucketHandler
 	// UserAPIDeleteBucketEventHandler sets the operation handler for the delete bucket event operation
 	UserAPIDeleteBucketEventHandler user_api.DeleteBucketEventHandler
-	// UserAPIDeleteBucketLifecycleHandler sets the operation handler for the delete bucket lifecycle operation
-	UserAPIDeleteBucketLifecycleHandler user_api.DeleteBucketLifecycleHandler
 	// UserAPIDeleteObjectHandler sets the operation handler for the delete object operation
 	UserAPIDeleteObjectHandler user_api.DeleteObjectHandler
 	// UserAPIDeleteObjectRetentionHandler sets the operation handler for the delete object retention operation
@@ -583,6 +581,8 @@ type ConsoleAPI struct {
 	AdminAPITenantUpdatePoolsHandler admin_api.TenantUpdatePoolsHandler
 	// AdminAPITiersListHandler sets the operation handler for the tiers list operation
 	AdminAPITiersListHandler admin_api.TiersListHandler
+	// UserAPIUpdateBucketLifecycleHandler sets the operation handler for the update bucket lifecycle operation
+	UserAPIUpdateBucketLifecycleHandler user_api.UpdateBucketLifecycleHandler
 	// AdminAPIUpdateGroupHandler sets the operation handler for the update group operation
 	AdminAPIUpdateGroupHandler admin_api.UpdateGroupHandler
 	// AdminAPIUpdateTenantHandler sets the operation handler for the update tenant operation
@@ -726,9 +726,6 @@ func (o *ConsoleAPI) Validate() error {
 	}
 	if o.UserAPIDeleteBucketEventHandler == nil {
 		unregistered = append(unregistered, "user_api.DeleteBucketEventHandler")
-	}
-	if o.UserAPIDeleteBucketLifecycleHandler == nil {
-		unregistered = append(unregistered, "user_api.DeleteBucketLifecycleHandler")
 	}
 	if o.UserAPIDeleteObjectHandler == nil {
 		unregistered = append(unregistered, "user_api.DeleteObjectHandler")
@@ -940,6 +937,9 @@ func (o *ConsoleAPI) Validate() error {
 	if o.AdminAPITiersListHandler == nil {
 		unregistered = append(unregistered, "admin_api.TiersListHandler")
 	}
+	if o.UserAPIUpdateBucketLifecycleHandler == nil {
+		unregistered = append(unregistered, "user_api.UpdateBucketLifecycleHandler")
+	}
 	if o.AdminAPIUpdateGroupHandler == nil {
 		unregistered = append(unregistered, "admin_api.UpdateGroupHandler")
 	}
@@ -1134,10 +1134,6 @@ func (o *ConsoleAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/buckets/{bucket_name}/events/{arn}"] = user_api.NewDeleteBucketEvent(o.context, o.UserAPIDeleteBucketEventHandler)
-	if o.handlers["PUT"] == nil {
-		o.handlers["PUT"] = make(map[string]http.Handler)
-	}
-	o.handlers["PUT"]["/buckets/{bucket_name}/lifecycle/{lifecycle_id}"] = user_api.NewDeleteBucketLifecycle(o.context, o.UserAPIDeleteBucketLifecycleHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
@@ -1418,6 +1414,10 @@ func (o *ConsoleAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/admin/tiers"] = admin_api.NewTiersList(o.context, o.AdminAPITiersListHandler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/buckets/{bucket_name}/lifecycle/{lifecycle_id}"] = user_api.NewUpdateBucketLifecycle(o.context, o.UserAPIUpdateBucketLifecycleHandler)
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}

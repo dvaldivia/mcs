@@ -701,7 +701,7 @@ func init() {
           "UserAPI"
         ],
         "summary": "Update Lifecycle rule",
-        "operationId": "DeleteBucketLifecycle",
+        "operationId": "UpdateBucketLifecycle",
         "parameters": [
           {
             "type": "string",
@@ -6740,7 +6740,7 @@ func init() {
           "UserAPI"
         ],
         "summary": "Update Lifecycle rule",
-        "operationId": "DeleteBucketLifecycle",
+        "operationId": "UpdateBucketLifecycle",
         "parameters": [
           {
             "type": "string",

@@ -30,40 +30,40 @@ import (
 	"github.com/minio/console/models"
 )
 
-// DeleteBucketLifecycleHandlerFunc turns a function with the right signature into a delete bucket lifecycle handler
-type DeleteBucketLifecycleHandlerFunc func(DeleteBucketLifecycleParams, *models.Principal) middleware.Responder
+// UpdateBucketLifecycleHandlerFunc turns a function with the right signature into a update bucket lifecycle handler
+type UpdateBucketLifecycleHandlerFunc func(UpdateBucketLifecycleParams, *models.Principal) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn DeleteBucketLifecycleHandlerFunc) Handle(params DeleteBucketLifecycleParams, principal *models.Principal) middleware.Responder {
+func (fn UpdateBucketLifecycleHandlerFunc) Handle(params UpdateBucketLifecycleParams, principal *models.Principal) middleware.Responder {
 	return fn(params, principal)
 }
 
-// DeleteBucketLifecycleHandler interface for that can handle valid delete bucket lifecycle params
-type DeleteBucketLifecycleHandler interface {
-	Handle(DeleteBucketLifecycleParams, *models.Principal) middleware.Responder
+// UpdateBucketLifecycleHandler interface for that can handle valid update bucket lifecycle params
+type UpdateBucketLifecycleHandler interface {
+	Handle(UpdateBucketLifecycleParams, *models.Principal) middleware.Responder
 }
 
-// NewDeleteBucketLifecycle creates a new http.Handler for the delete bucket lifecycle operation
-func NewDeleteBucketLifecycle(ctx *middleware.Context, handler DeleteBucketLifecycleHandler) *DeleteBucketLifecycle {
-	return &DeleteBucketLifecycle{Context: ctx, Handler: handler}
+// NewUpdateBucketLifecycle creates a new http.Handler for the update bucket lifecycle operation
+func NewUpdateBucketLifecycle(ctx *middleware.Context, handler UpdateBucketLifecycleHandler) *UpdateBucketLifecycle {
+	return &UpdateBucketLifecycle{Context: ctx, Handler: handler}
 }
 
-/*DeleteBucketLifecycle swagger:route PUT /buckets/{bucket_name}/lifecycle/{lifecycle_id} UserAPI deleteBucketLifecycle
+/*UpdateBucketLifecycle swagger:route PUT /buckets/{bucket_name}/lifecycle/{lifecycle_id} UserAPI updateBucketLifecycle
 
 Update Lifecycle rule
 
 */
-type DeleteBucketLifecycle struct {
+type UpdateBucketLifecycle struct {
 	Context *middleware.Context
-	Handler DeleteBucketLifecycleHandler
+	Handler UpdateBucketLifecycleHandler
 }
 
-func (o *DeleteBucketLifecycle) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (o *UpdateBucketLifecycle) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	route, rCtx, _ := o.Context.RouteInfo(r)
 	if rCtx != nil {
 		r = rCtx
 	}
-	var Params = NewDeleteBucketLifecycleParams()
+	var Params = NewUpdateBucketLifecycleParams()
 
 	uprinc, aCtx, err := o.Context.Authorize(r, route)
 	if err != nil {

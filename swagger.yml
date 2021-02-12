@@ -904,7 +904,7 @@ paths:
   /buckets/{bucket_name}/lifecycle/{lifecycle_id}:
     put:
       summary: Update Lifecycle rule
-      operationId: DeleteBucketLifecycle
+      operationId: UpdateBucketLifecycle
       parameters:
         - name: bucket_name
           in: path

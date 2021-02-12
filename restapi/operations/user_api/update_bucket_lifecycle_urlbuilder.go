@@ -29,8 +29,8 @@ import (
 	"strings"
 )
 
-// DeleteBucketLifecycleURL generates an URL for the delete bucket lifecycle operation
-type DeleteBucketLifecycleURL struct {
+// UpdateBucketLifecycleURL generates an URL for the update bucket lifecycle operation
+type UpdateBucketLifecycleURL struct {
 	BucketName  string
 	LifecycleID string
 
@@ -42,7 +42,7 @@ type DeleteBucketLifecycleURL struct {
 // WithBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *DeleteBucketLifecycleURL) WithBasePath(bp string) *DeleteBucketLifecycleURL {
+func (o *UpdateBucketLifecycleURL) WithBasePath(bp string) *UpdateBucketLifecycleURL {
 	o.SetBasePath(bp)
 	return o
 }
@@ -50,12 +50,12 @@ func (o *DeleteBucketLifecycleURL) WithBasePath(bp string) *DeleteBucketLifecycl
 // SetBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *DeleteBucketLifecycleURL) SetBasePath(bp string) {
+func (o *UpdateBucketLifecycleURL) SetBasePath(bp string) {
 	o._basePath = bp
 }
 
 // Build a url path and query string
-func (o *DeleteBucketLifecycleURL) Build() (*url.URL, error) {
+func (o *UpdateBucketLifecycleURL) Build() (*url.URL, error) {
 	var _result url.URL
 
 	var _path = "/buckets/{bucket_name}/lifecycle/{lifecycle_id}"
@@ -64,14 +64,14 @@ func (o *DeleteBucketLifecycleURL) Build() (*url.URL, error) {
 	if bucketName != "" {
 		_path = strings.Replace(_path, "{bucket_name}", bucketName, -1)
 	} else {
-		return nil, errors.New("bucketName is required on DeleteBucketLifecycleURL")
+		return nil, errors.New("bucketName is required on UpdateBucketLifecycleURL")
 	}
 
 	lifecycleID := o.LifecycleID
 	if lifecycleID != "" {
 		_path = strings.Replace(_path, "{lifecycle_id}", lifecycleID, -1)
 	} else {
-		return nil, errors.New("lifecycleId is required on DeleteBucketLifecycleURL")
+		return nil, errors.New("lifecycleId is required on UpdateBucketLifecycleURL")
 	}
 
 	_basePath := o._basePath
@@ -84,7 +84,7 @@ func (o *DeleteBucketLifecycleURL) Build() (*url.URL, error) {
 }
 
 // Must is a helper function to panic when the url builder returns an error
-func (o *DeleteBucketLifecycleURL) Must(u *url.URL, err error) *url.URL {
+func (o *UpdateBucketLifecycleURL) Must(u *url.URL, err error) *url.URL {
 	if err != nil {
 		panic(err)
 	}
@@ -95,17 +95,17 @@ func (o *DeleteBucketLifecycleURL) Must(u *url.URL, err error) *url.URL {
 }
 
 // String returns the string representation of the path with query string
-func (o *DeleteBucketLifecycleURL) String() string {
+func (o *UpdateBucketLifecycleURL) String() string {
 	return o.Must(o.Build()).String()
 }
 
 // BuildFull builds a full url with scheme, host, path and query string
-func (o *DeleteBucketLifecycleURL) BuildFull(scheme, host string) (*url.URL, error) {
+func (o *UpdateBucketLifecycleURL) BuildFull(scheme, host string) (*url.URL, error) {
 	if scheme == "" {
-		return nil, errors.New("scheme is required for a full url on DeleteBucketLifecycleURL")
+		return nil, errors.New("scheme is required for a full url on UpdateBucketLifecycleURL")
 	}
 	if host == "" {
-		return nil, errors.New("host is required for a full url on DeleteBucketLifecycleURL")
+		return nil, errors.New("host is required for a full url on UpdateBucketLifecycleURL")
 	}
 
 	base, err := o.Build()
@@ -119,6 +119,6 @@ func (o *DeleteBucketLifecycleURL) BuildFull(scheme, host string) (*url.URL, err
 }
 
 // StringFull returns the string representation of a complete url
-func (o *DeleteBucketLifecycleURL) StringFull(scheme, host string) string {
+func (o *UpdateBucketLifecycleURL) StringFull(scheme, host string) string {
 	return o.Must(o.BuildFull(scheme, host)).String()
 }
