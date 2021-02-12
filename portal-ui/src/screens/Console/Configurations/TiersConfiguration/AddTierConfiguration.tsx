@@ -111,6 +111,7 @@ const AddTierConfiguration = ({
               secretkey: secretKey,
             },
           };
+          setEndpoint("https://s3.amazonaws.com");
           break;
         case "gcs":
           request = {
@@ -119,6 +120,7 @@ const AddTierConfiguration = ({
               creds: encodedCreds,
             },
           };
+          setEndpoint("https://storage.googleapis.com/");
           break;
         case "azure":
           request = {
@@ -128,6 +130,7 @@ const AddTierConfiguration = ({
               accountkey: accountKey,
             },
           };
+          setEndpoint("http://blob.core.windows.net");
       }
 
       let payload = {
