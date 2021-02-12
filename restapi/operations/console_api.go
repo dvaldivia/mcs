@@ -1134,10 +1134,10 @@ func (o *ConsoleAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/buckets/{bucket_name}/events/{arn}"] = user_api.NewDeleteBucketEvent(o.context, o.UserAPIDeleteBucketEventHandler)
-	if o.handlers["DELETE"] == nil {
-		o.handlers["DELETE"] = make(map[string]http.Handler)
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
-	o.handlers["DELETE"]["/buckets/{bucket_name}/lifecycle/{lifecycle_id}"] = user_api.NewDeleteBucketLifecycle(o.context, o.UserAPIDeleteBucketLifecycleHandler)
+	o.handlers["PUT"]["/buckets/{bucket_name}/lifecycle/{lifecycle_id}"] = user_api.NewDeleteBucketLifecycle(o.context, o.UserAPIDeleteBucketLifecycleHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}

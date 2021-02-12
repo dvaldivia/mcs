@@ -696,11 +696,11 @@ func init() {
       }
     },
     "/buckets/{bucket_name}/lifecycle/{lifecycle_id}": {
-      "delete": {
+      "put": {
         "tags": [
           "UserAPI"
         ],
-        "summary": "Delete Lifecycle rule",
+        "summary": "Update Lifecycle rule",
         "operationId": "DeleteBucketLifecycle",
         "parameters": [
           {
@@ -714,6 +714,14 @@ func init() {
             "name": "lifecycle_id",
             "in": "path",
             "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/updateBucketLifecycle"
+            }
           }
         ],
         "responses": {
@@ -5833,6 +5841,17 @@ func init() {
         }
       }
     },
+    "updateBucketLifecycle": {
+      "type": "object",
+      "properties": {
+        "disable": {
+          "type": "boolean"
+        },
+        "tags": {
+          "type": "string"
+        }
+      }
+    },
     "updateGroupRequest": {
       "type": "object",
       "required": [
@@ -6716,11 +6735,11 @@ func init() {
       }
     },
     "/buckets/{bucket_name}/lifecycle/{lifecycle_id}": {
-      "delete": {
+      "put": {
         "tags": [
           "UserAPI"
         ],
-        "summary": "Delete Lifecycle rule",
+        "summary": "Update Lifecycle rule",
         "operationId": "DeleteBucketLifecycle",
         "parameters": [
           {
@@ -6734,6 +6753,14 @@ func init() {
             "name": "lifecycle_id",
             "in": "path",
             "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/updateBucketLifecycle"
+            }
           }
         ],
         "responses": {
@@ -12323,6 +12350,17 @@ func init() {
           "format": "int64"
         },
         "storage_class": {
+          "type": "string"
+        }
+      }
+    },
+    "updateBucketLifecycle": {
+      "type": "object",
+      "properties": {
+        "disable": {
+          "type": "boolean"
+        },
+        "tags": {
           "type": "string"
         }
       }

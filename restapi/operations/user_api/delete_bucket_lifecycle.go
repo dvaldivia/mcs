@@ -48,9 +48,9 @@ func NewDeleteBucketLifecycle(ctx *middleware.Context, handler DeleteBucketLifec
 	return &DeleteBucketLifecycle{Context: ctx, Handler: handler}
 }
 
-/*DeleteBucketLifecycle swagger:route DELETE /buckets/{bucket_name}/lifecycle/{lifecycle_id} UserAPI deleteBucketLifecycle
+/*DeleteBucketLifecycle swagger:route PUT /buckets/{bucket_name}/lifecycle/{lifecycle_id} UserAPI deleteBucketLifecycle
 
-Delete Lifecycle rule
+Update Lifecycle rule
 
 */
 type DeleteBucketLifecycle struct {

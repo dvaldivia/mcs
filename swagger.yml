@@ -902,8 +902,8 @@ paths:
       tags:
         - UserAPI
   /buckets/{bucket_name}/lifecycle/{lifecycle_id}:
-    delete:
-      summary: Delete Lifecycle rule
+    put:
+      summary: Update Lifecycle rule
       operationId: DeleteBucketLifecycle
       parameters:
         - name: bucket_name
@@ -914,6 +914,11 @@ paths:
           in: path
           required: true
           type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/updateBucketLifecycle"
       responses:
         204:
           description: A successful response.
@@ -4174,6 +4179,14 @@ definitions:
         default: 0
       noncurrentversion_transition_storage_class:
         type: string
+  
+  updateBucketLifecycle:
+    type: object
+    properties:
+      tags:
+        type: string
+      disable:
+        type: boolean
 
   setConfigResponse:
     type: object
