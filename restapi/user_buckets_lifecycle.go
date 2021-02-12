@@ -50,12 +50,12 @@ func registerBucketsLifecycleHandlers(api *operations.ConsoleAPI) {
 		if err != nil {
 			return user_api.NewAddBucketLifecycleDefault(int(err.Code)).WithPayload(err)
 		}
-		return user_api.NewAddBucketReplicationCreated()
+		return user_api.NewAddBucketLifecycleCreated()
 	})
 }
 
 // getBucketLifecycle() gets lifecycle lists for a bucket from MinIO API and returns their implementations
-func getBucketLifecycle(ctx context.Context, client MinioClient, bucketName string) ([]*models.ObjectBucketLifecycle, error) {
+func getBucketLifecycle(ctx context.Context, client MinioClient, bucketName string) (*models.BucketLifecycleResponse, error) {
 	lifecycleList, err := client.getLifecycleRules(ctx, bucketName)
 	if err != nil {
 		return nil, err
@@ -84,10 +84,15 @@ func getBucketLifecycle(ctx context.Context, client MinioClient, bucketName stri
 		})
 	}
 
-	return rules, nil
+	// serialize output
+	lifecycleBucketsResponse := &models.BucketLifecycleResponse{
+		Lifecycle: rules,
+	}
+
+	return lifecycleBucketsResponse, nil
 }
 
-// getListBucketsResponse performs getBucketLifecycle() and serializes it to the handler's output
+// getBucketLifecycleResponse performs getBucketLifecycle() and serializes it to the handler's output
 func getBucketLifecycleResponse(session *models.Principal, params user_api.GetBucketLifecycleParams) (*models.BucketLifecycleResponse, *models.Error) {
 	ctx := context.Background()
 	mClient, err := newMinioClient(session)
@@ -102,14 +107,10 @@ func getBucketLifecycleResponse(session *models.Principal, params user_api.GetBu
 	if err != nil {
 		return nil, prepareError(err)
 	}
-	// serialize output
-	lifecycleBucketsResponse := &models.BucketLifecycleResponse{
-		Lifecycle: bucketEvents,
-	}
-	return lifecycleBucketsResponse, nil
+	return bucketEvents, nil
 }
 
-// getBucketLifecycle() gets lifecycle lists for a bucket from MinIO API and returns their implementations
+// addBucketLifecycle gets lifecycle lists for a bucket from MinIO API and returns their implementations
 func addBucketLifecycle(ctx context.Context, client MinioClient, params user_api.AddBucketLifecycleParams) error {
 	// Configuration that is already set.
 	lfcCfg, err := client.getLifecycleRules(ctx, params.BucketName)
@@ -145,11 +146,8 @@ func addBucketLifecycle(ctx context.Context, client MinioClient, params user_api
 	if err2.ToGoError() != nil {
 		return err2.ToGoError()
 	}
-	if err = client.setBucketLifecycle(ctx, params.BucketName, lfcCfg); err != nil {
-		return err
-	}
 
-	return nil
+	return client.setBucketLifecycle(ctx, params.BucketName, lfcCfg)
 }
 
 // getAddBucketLifecycleResponse returns the respose of adding a bucket lifecycle response

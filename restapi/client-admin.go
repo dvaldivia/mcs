@@ -307,12 +307,12 @@ func (ac adminClient) listTiers(ctx context.Context) ([]*madmin.TierConfig, erro
 	return ac.client.ListTiers(ctx)
 }
 
-// implements madmin.ServerInfo()
+// implements madmin.AddTier()
 func (ac adminClient) addTier(ctx context.Context, cfg *madmin.TierConfig) error {
 	return ac.client.AddTier(ctx, cfg)
 }
 
-// implements madmin.ServerInfo()
+// implements madmin.EditTier()
 func (ac adminClient) editTierCreds(ctx context.Context, tierName string, creds madmin.TierCreds) error {
 	return ac.client.EditTier(ctx, tierName, creds)
 }

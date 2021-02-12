@@ -33,7 +33,7 @@ func registerAdminTiersHandlers(api *operations.ConsoleAPI) {
 	api.AdminAPITiersListHandler = admin_api.TiersListHandlerFunc(func(params admin_api.TiersListParams, session *models.Principal) middleware.Responder {
 		tierList, err := getTiersResponse(session)
 		if err != nil {
-			return admin_api.NewNotificationEndpointListDefault(int(err.Code)).WithPayload(err)
+			return admin_api.NewTiersListDefault(int(err.Code)).WithPayload(err)
 		}
 		return admin_api.NewTiersListOK().WithPayload(tierList)
 	})
@@ -294,7 +294,7 @@ func getTier(ctx context.Context, client MinioAdmin, params *admin_api.GetTierPa
 	return nil, ErrorGenericNotFound
 }
 
-// getNotificationEndpointsResponse returns a list of notification endpoints in the instance
+// getGetTierResponse returns a tier
 func getGetTierResponse(session *models.Principal, params *admin_api.GetTierParams) (*models.Tier, *models.Error) {
 	mAdmin, err := newMAdminClient(session)
 	if err != nil {
