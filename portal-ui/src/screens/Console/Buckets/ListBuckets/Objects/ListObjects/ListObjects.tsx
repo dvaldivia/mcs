@@ -59,6 +59,7 @@ import {
   setLastAsFile,
   fileIsBeingPrepared,
   fileDownloadStarted,
+  resetRewind,
 } from "../../../../ObjectBrowser/actions";
 import {
   ObjectBrowserReducer,
@@ -175,6 +176,7 @@ interface IListObjectsProps {
   setErrorSnackMessage: typeof setErrorSnackMessage;
   fileIsBeingPrepared: typeof fileIsBeingPrepared;
   fileDownloadStarted: typeof fileDownloadStarted;
+  resetRewind: typeof resetRewind;
 }
 
 function useInterval(callback: any, delay: number) {
@@ -217,6 +219,7 @@ const ListObjects = ({
   setErrorSnackMessage,
   fileIsBeingPrepared,
   fileDownloadStarted,
+  resetRewind,
 }: IListObjectsProps) => {
   const [records, setRecords] = useState<BucketObject[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -284,6 +287,11 @@ const ListObjects = ({
     const internalPaths = match.params[0];
 
     if (rewindEnabled) {
+      if (bucketToRewind !== bucketName) {
+        resetRewind();
+        return;
+      }
+
       if (rewindDate) {
         setLoadingRewind(true);
         const rewindParsed = rewindDate.toISOString();
@@ -316,6 +324,7 @@ const ListObjects = ({
     bucketName,
     match,
     setErrorSnackMessage,
+    resetRewind,
   ]);
 
   useEffect(() => {
@@ -830,6 +839,7 @@ const mapDispatchToProps = {
   setErrorSnackMessage,
   fileIsBeingPrepared,
   fileDownloadStarted,
+  resetRewind,
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
