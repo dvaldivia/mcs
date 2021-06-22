@@ -72,9 +72,10 @@ const BrowserBreadcrumbs = ({
           {objectsList && objectsList.length > 0
             ? objectsList.slice(-1)[0].label
             : ""}
-          {rewindEnabled && (
+          {rewindEnabled && objectsList.length > 1 && (
             <small className={classes.smallLabel}>
-              &nbsp;(Rewind Date: <Moment date={rewindDate} format="MMMM Do YYYY, h:mm a" /> )
+              &nbsp;(Rewind Date:{" "}
+              <Moment date={rewindDate} format="MMMM Do YYYY, h:mm a" /> )
             </small>
           )}
         </div>
