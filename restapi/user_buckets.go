@@ -789,9 +789,9 @@ func getBucketRewindResponse(session *models.Principal, params user_api.GetBucke
 
 	for content := range mcClient.client.List(ctx, cmd.ListOptions{TimeRef: parsedDate, WithDeleteMarkers: true}) {
 		listElement := &models.RewindItem{
-			LastModified: content.Time.String(),
+			LastModified: content.Time.Format(time.RFC3339),
 			Size:         content.Size,
-			Version:      content.VersionID,
+			VersionID:    content.VersionID,
 			DeleteFlag:   content.IsDeleteMarker,
 			Action:       "",
 			Name:         content.URL.Path,

@@ -687,6 +687,7 @@ const ListObjects = ({
     {
       label: "Deleted",
       elementKey: "delete_flag",
+      renderFullObject: true,
       renderFunction: displayDeleteFlag,
       width: 60,
       contentTextAlign: "center",

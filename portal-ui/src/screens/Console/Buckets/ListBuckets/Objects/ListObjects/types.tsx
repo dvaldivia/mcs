@@ -31,7 +31,7 @@ export interface RewindObject {
   last_modified: string;
   delete_flag: boolean;
   name: string;
-  version: string;
+  version_id: string;
   size: number;
 }
 

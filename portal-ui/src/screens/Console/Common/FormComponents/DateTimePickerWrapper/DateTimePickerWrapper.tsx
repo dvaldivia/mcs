@@ -22,10 +22,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import ScheduleIcon from "@material-ui/icons/Schedule";
 import { createStyles, Theme, withStyles } from "@material-ui/core/styles";
 import HelpIcon from "../../../../../icons/HelpIcon";
-import {
-  fieldBasic,
-  tooltipHelper,
-} from "../common/styleLibrary";
+import { fieldBasic, tooltipHelper } from "../common/styleLibrary";
 
 interface IDateTimePicker {
   value: any;
@@ -95,7 +92,7 @@ const DateTimePickerWrapper = ({
   tooltip = "",
   required,
   id,
-  disabled = false
+  disabled = false,
 }: IDateTimePicker) => {
   const inputItem = (
     <MuiPickersUtilsProvider utils={MomentUtils}>
@@ -113,7 +110,11 @@ const DateTimePickerWrapper = ({
         label=""
         ampm={false}
         variant={"inline"}
-        className={forSearchBlock ? classes.parentDateOverride : classes.dateSelectorFormOverride}
+        className={
+          forSearchBlock
+            ? classes.parentDateOverride
+            : classes.dateSelectorFormOverride
+        }
         format="MMMM Do YYYY, h:mm a"
         id={id}
         disabled={disabled}

@@ -21,7 +21,10 @@ import { Button, LinearProgress } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import { ObjectBrowserReducer } from "../../../../ObjectBrowser/reducers";
 import { modalBasic } from "../../../../Common/FormComponents/common/styleLibrary";
-import { resetRewind, setRewindEnable } from "../../../../ObjectBrowser/actions";
+import {
+  resetRewind,
+  setRewindEnable,
+} from "../../../../ObjectBrowser/actions";
 import ModalWrapper from "../../../../Common/ModalWrapper/ModalWrapper";
 import DateTimePickerWrapper from "../../../../Common/FormComponents/DateTimePickerWrapper/DateTimePickerWrapper";
 import FormSwitchWrapper from "../../../../Common/FormComponents/FormSwitchWrapper/FormSwitchWrapper";
@@ -116,7 +119,7 @@ const RewindEnable = ({
             type="button"
             variant="contained"
             color="primary"
-            disabled={rewindEnabling || (!dateSelected && rewindEnableButton) }
+            disabled={rewindEnabling || (!dateSelected && rewindEnableButton)}
             onClick={rewindApply}
           >
             {!rewindEnableButton && rewindEnabled

@@ -150,12 +150,16 @@ export const fileDownloadStarted = (path: string) => {
   };
 };
 
-export const setRewindEnable = (state: boolean, bucket: string, dateRewind: any) => {
+export const setRewindEnable = (
+  state: boolean,
+  bucket: string,
+  dateRewind: any
+) => {
   return {
     type: REWIND_SET_ENABLE,
     state,
     bucket,
-    dateRewind
+    dateRewind,
   };
 };
 

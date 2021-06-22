@@ -5524,7 +5524,7 @@ definitions:
       size:
         type: integer
         format: int64
-      version:
+      version_id:
         type: string
       delete_flag:
         type: boolean

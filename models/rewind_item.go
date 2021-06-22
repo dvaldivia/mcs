@@ -49,8 +49,8 @@ type RewindItem struct {
 	// size
 	Size int64 `json:"size,omitempty"`
 
-	// version
-	Version string `json:"version,omitempty"`
+	// version id
+	VersionID string `json:"version_id,omitempty"`
 }
 
 // Validate validates this rewind item

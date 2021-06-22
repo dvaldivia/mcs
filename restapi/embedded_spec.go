@@ -6876,7 +6876,7 @@ func init() {
           "type": "integer",
           "format": "int64"
         },
-        "version": {
+        "version_id": {
           "type": "string"
         }
       }
@@ -15231,7 +15231,7 @@ func init() {
           "type": "integer",
           "format": "int64"
         },
-        "version": {
+        "version_id": {
           "type": "string"
         }
       }

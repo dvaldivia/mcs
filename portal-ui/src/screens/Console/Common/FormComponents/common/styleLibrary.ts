@@ -262,7 +262,7 @@ export const objectBrowserCommon = {
   smallLabel: {
     color: "#9C9C9C",
     fontSize: 15,
-  }
+  },
 };
 
 export const selectorsCommon = {
